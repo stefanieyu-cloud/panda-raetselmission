@@ -1,0 +1,1784 @@
+﻿<title>Panda Rätselmission</title>
+<meta name="description" content="Eine 30-Tage-Panda-Reise fürs Chinesisch-Lernen: kleine Rätsel lösen, Dumpling-Stempel sammeln, Überraschungsgeschenke freischalten und den Panda über eine bunte Karte begleiten. Nur lokal im Browser gespeichert." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EEF1E9; --paper-raised: #FFFFFF; --ink: #1B211C; --ink-soft: #565F55;
+    --seal: #C1272D; --seal-deep: #8C1A1F; --gold: #A9822A; --jade: #3E7D6A; --jade-soft: #CFE3DA;
+    --line: #D3D9CC; --chip-bg: #E3E7DC; --sick: #7B5EA7;
+    --zone1: #E4F3E1; --zone2: #FDF3D6; --zone3: #DCEEF7; --zone4: #FBE6DA; --zone5: #FCE9C6;
+    --shadow: 0 1px 2px rgba(27,33,28,0.06), 0 6px 20px rgba(27,33,28,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #171B17; --paper-raised: #21261F; --ink: #E9EDE4; --ink-soft: #A9B3A3;
+      --seal: #E8594F; --seal-deep: #F3897F; --gold: #D9BA5C; --jade: #63C2AC; --jade-soft: #274038;
+      --line: #333A30; --chip-bg: #2A312A; --sick: #B79CE0;
+      --zone1: #233327; --zone2: #3A3220; --zone3: #22323A; --zone4: #3A2A22; --zone5: #3A3020;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #171B17; --paper-raised: #21261F; --ink: #E9EDE4; --ink-soft: #A9B3A3;
+    --seal: #E8594F; --seal-deep: #F3897F; --gold: #D9BA5C; --jade: #63C2AC; --jade-soft: #274038;
+    --line: #333A30; --chip-bg: #2A312A; --sick: #B79CE0;
+    --zone1: #233327; --zone2: #3A3220; --zone3: #22323A; --zone4: #3A2A22; --zone5: #3A3020;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 10px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: "Noto Sans SC", "Segoe UI", sans-serif;
+    padding-inline: 16px; padding-block: 24px 48px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+  [hidden] { display: none !important; }
+
+  header.hero {
+    position: relative; background: var(--paper-raised); border: 1px solid var(--line);
+    border-radius: 18px; padding: 22px 20px 18px; overflow: hidden; box-shadow: var(--shadow);
+  }
+  .hero-watermark {
+    position: absolute; right: -10px; top: -24px; font-family: "Ma Shan Zheng", cursive;
+    font-size: 140px; line-height: 1; color: var(--jade); opacity: 0.10; pointer-events: none; user-select: none;
+  }
+  .eyebrow {
+    font-size: 12px; letter-spacing: .09em; text-transform: uppercase; color: var(--seal);
+    font-weight: 600; display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow .stamp {
+    display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+    border: 1.5px solid var(--seal); border-radius: 4px; font-family: "Noto Serif SC", serif; font-size: 12px; color: var(--seal);
+  }
+  h1 { font-family: "Noto Serif SC", serif; font-weight: 900; font-size: clamp(24px,6vw,32px); margin: 8px 0 4px; text-wrap: balance; }
+  h1 .cn { color: var(--jade); }
+  .sub { color: var(--ink-soft); font-size: 14px; max-width: 52ch; line-height: 1.5; }
+
+  .adopt-form { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto; text-align: center; }
+  .adopt-form input {
+    font: inherit; font-size: 15px; font-family: "Noto Serif SC", serif; font-weight: 700;
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper); color: var(--ink); text-align: center;
+  }
+  .storage-note { font-size: 11.5px; color: var(--ink-soft); text-align: center; max-width: 320px; margin: 4px auto 0; line-height: 1.5; }
+  .adopt-hero-img { display: block; width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin: 0 auto 14px; box-shadow: var(--shadow); }
+
+  .lesson-select-row { margin-top: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .lesson-select-row label { font-size: 13px; color: var(--ink-soft); }
+  #lesson-select {
+    font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ink); background: var(--paper);
+    border: 1.5px solid var(--line); border-radius: 10px; padding: 7px 10px; max-width: 100%;
+  }
+  #lesson-select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .lesson-note { font-size: 12px; color: var(--ink-soft); margin-top: 8px; line-height: 1.5; }
+
+  section.card { background: var(--paper-raised); border: 1px solid var(--line); border-radius: 18px; padding: 20px; box-shadow: var(--shadow); }
+
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 0 4px; position: relative; }
+  .pet-stage {
+    width: 190px; height: 190px; position: relative;
+    transform-origin: 50% 100%; transition: transform .3s ease;
+  }
+  .pet-stage[data-stage="baby"]  { transform: scale(0.74); }
+  .pet-stage[data-stage="young"] { transform: scale(0.88); }
+  .pet-stage[data-stage="adult"] { transform: scale(1); }
+  .pet-stage[data-stage="elder"] { transform: scale(1.12); }
+  .pet-img {
+    display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    background: #fff; border: 4px solid var(--paper-raised); box-shadow: var(--shadow);
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  .pet-img.swap-out { opacity: 0; transform: scale(0.86); }
+  @media (prefers-reduced-motion: no-preference) {
+    .pet-inner { animation: pet-idle-sway 4.5s ease-in-out infinite; transform-origin: 50% 90%; display: block; height: 100%; }
+    .pet-inner.pet-hop { animation: pet-hop .55s ease-in-out 2; }
+  }
+  @keyframes pet-idle-sway {
+    0%, 50%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-2deg); }
+    75% { transform: rotate(2deg); }
+  }
+  @keyframes pet-hop {
+    0%, 100% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-14px) scale(1.06); }
+  }
+
+  .status-card { text-align: center; margin-top: 8px; }
+  .status-card .p-name { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 21px; margin: 4px 0 6px; }
+  .status-card .p-line { font-size: 13.5px; color: var(--ink-soft); margin: 2px 0; }
+  .status-card .p-status { margin-top: 10px; font-size: 17px; font-weight: 700; }
+  .dumpling-row { text-align: center; margin-top: 14px; font-size: 15px; font-weight: 700; color: var(--gold); }
+
+  .pass-heading { text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-top: 18px; font-weight: 700; }
+  .gift-row { display: flex; justify-content: center; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
+  .gift-chip { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--ink-soft); min-width: 52px; }
+  .gift-chip .gc-icon { font-size: 26px; }
+  .gift-chip.locked .gc-icon { opacity: .32; }
+  .gift-chip.ready { cursor: pointer; }
+  .gift-chip.ready .gc-icon { animation: giftPulse 1.1s ease-in-out infinite; }
+  @keyframes giftPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.16); } }
+
+  .journey-map { margin-top: 18px; }
+  .map-zone { border-radius: 14px; padding: 10px 6px 8px; margin-bottom: 8px; }
+  .map-zone.z1 { background: var(--zone1); }
+  .map-zone.z2 { background: var(--zone2); }
+  .map-zone.z3 { background: var(--zone3); }
+  .map-zone.z4 { background: var(--zone4); }
+  .map-zone.z5 { background: var(--zone5); }
+  .map-row-label { font-size: 11px; color: var(--ink-soft); text-align: center; margin-bottom: 6px; font-weight: 700; }
+  .map-row { display: flex; gap: 6px; justify-content: center; }
+  .map-tile {
+    width: 30px; height: 30px; border-radius: 8px; background: var(--paper-raised); border: 1.5px solid var(--line);
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+    position: relative; color: var(--ink-soft);
+  }
+  .map-tile.done { background: color-mix(in srgb, var(--gold) 22%, var(--paper-raised)); border-color: var(--gold); color: var(--ink); }
+  .map-tile .tile-num {
+    position: absolute; bottom: -3px; right: -3px; font-size: 7px; color: var(--ink-soft); background: var(--paper-raised);
+    border: 1px solid var(--line); border-radius: 5px; padding: 0 2px; line-height: 1.3;
+  }
+  .map-tile.milestone { box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 55%, transparent); }
+  .map-tile.milestone.done { box-shadow: 0 0 0 2.5px var(--gold), 0 0 9px 2px color-mix(in srgb, var(--gold) 55%, transparent); }
+  .map-tile.here { border-color: var(--seal); box-shadow: 0 0 0 3px color-mix(in srgb, var(--seal) 25%, transparent); font-size: 16px; }
+  .map-tile .tile-milestone { position: absolute; top: -7px; left: -5px; font-size: 12px; }
+  .map-tile-marker { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block; background: #fff; }
+
+  .save-code-wrap { text-align: center; margin-top: 16px; }
+  .btn-link {
+    background: none; border: none; color: var(--jade); font: inherit; font-size: 12.5px;
+    text-decoration: underline; cursor: pointer; padding: 4px;
+  }
+  .save-code-box { margin-top: 10px; }
+  .save-code-box textarea, .save-code-box input {
+    width: 100%; font: 12px monospace; padding: 8px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--paper); color: var(--ink); resize: vertical;
+  }
+  .save-code-hint { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+
+  .test-panel {
+    border: 2px dashed var(--seal); border-radius: 14px; padding: 12px; margin-top: 16px;
+    background: color-mix(in srgb, var(--seal) 6%, var(--paper-raised)); text-align: center;
+  }
+  .test-panel h3 { margin: 0 0 4px; font-size: 13px; color: var(--seal); letter-spacing: .06em; }
+  .test-panel p { font-size: 11.5px; color: var(--ink-soft); margin: 0 0 10px; }
+  .test-panel .test-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+  .toast {
+    position: fixed; left: 50%; top: 18px; transform: translateX(-50%);
+    background: var(--jade); color: #fff; padding: 8px 18px; border-radius: 999px;
+    font-weight: 600; font-size: 13.5px; box-shadow: var(--shadow); z-index: 50;
+    opacity: 0; pointer-events: none; transition: opacity .25s, top .25s;
+  }
+  .toast.show { opacity: 1; top: 28px; }
+
+  h2.section-title { font-family: "Noto Serif SC", serif; font-size: 17px; margin: 0 0 4px; }
+  .section-sub { font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; }
+
+  .puzzle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .puzzle-btn {
+    position: relative; border: 1.5px solid var(--line); background: var(--paper); border-radius: 14px;
+    padding: 14px 6px 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font: inherit; color: var(--ink);
+  }
+  .puzzle-btn .cn-tag { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 18px; color: var(--jade); }
+  .puzzle-btn .de-tag { font-size: 11px; line-height: 1.25; }
+  .puzzle-btn:hover:not(:disabled) { border-color: var(--jade); }
+  .puzzle-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .puzzle-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .puzzle-btn.stage-locked { opacity: .55; }
+  .puzzle-btn .done-dot { position: absolute; top: 6px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--jade); }
+  .puzzle-btn .lock-tag { position: absolute; top: 5px; right: 6px; font-size: 8.5px; color: var(--ink-soft); }
+
+  .today-count { text-align: center; font-size: 12.5px; color: var(--ink-soft); margin-top: 12px; }
+
+  .puzzle-panel { display: flex; flex-direction: column; gap: 14px; }
+  .puzzle-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .puzzle-head h2 { margin: 0; font-family: "Noto Serif SC", serif; font-size: 17px; }
+  .btn-ghost {
+    border: 1px solid var(--line); background: transparent; color: var(--ink-soft); border-radius: 10px;
+    padding: 7px 12px; font: inherit; font-size: 12.5px; cursor: pointer;
+  }
+  .btn-ghost:hover { color: var(--ink); border-color: var(--ink-soft); }
+  .btn-primary {
+    border: none; background: var(--jade); color: #fff; border-radius: 10px; padding: 9px 18px;
+    font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer;
+  }
+  .btn-primary:hover { filter: brightness(0.95); }
+  .btn-primary:disabled { opacity: .5; cursor: default; }
+
+  .prompt-box { text-align: center; }
+  .prompt-hanzi { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 22px; }
+  .prompt-pinyin { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .prompt-de { font-size: 13px; color: var(--ink-soft); font-style: italic; }
+  .cue-de { font-size: 12.5px; color: var(--jade); font-weight: 600; margin-top: 2px; }
+
+  .match-grid, .triplet-grid { display: flex; gap: 10px; justify-content: center; }
+  .match-col { display: flex; flex-direction: column; gap: 8px; flex: 1; max-width: 150px; }
+  .match-chip {
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 10px;
+    padding: 9px 6px; font: inherit; font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; text-align: center;
+  }
+  .match-chip:hover:not(:disabled) { border-color: var(--jade); }
+  .match-chip.sel { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 15%, var(--paper)); }
+  .match-chip.matched { background: var(--jade); border-color: var(--jade); color: #fff; opacity: .75; }
+
+  .sudoku-board {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; background: var(--ink);
+    border: 3px solid var(--ink); border-radius: 10px; overflow: hidden; aspect-ratio: 1; max-width: 300px; margin: 0 auto;
+  }
+  .sk-cell {
+    background: var(--paper-raised); border: none; font-family: "Noto Serif SC", serif; font-weight: 700;
+    font-size: clamp(14px, 4vw, 19px); color: var(--ink); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+  }
+  .sk-cell.given { background: var(--chip-bg); cursor: default; }
+  .sk-cell.selected { box-shadow: inset 0 0 0 3px var(--gold); }
+  .sk-cell.conflict { color: var(--seal); background: color-mix(in srgb, var(--seal) 14%, var(--paper-raised)); }
+  .sk-cell.br { border-right: 3px solid var(--ink); }
+  .sk-cell.bb { border-bottom: 3px solid var(--ink); }
+  .sk-palette { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; max-width: 300px; margin: 12px auto 0; }
+  .sk-sym {
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 10px;
+    padding: 9px 4px; font-family: "Noto Serif SC", serif; font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .sk-sym:hover { border-color: var(--jade); }
+
+  .tf-list { display: flex; flex-direction: column; gap: 10px; }
+  .tf-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+  .tf-text { font-size: 14px; margin-bottom: 8px; }
+  .tf-buttons { display: flex; gap: 8px; }
+  .tf-buttons button {
+    flex: 1; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink);
+    border-radius: 8px; padding: 7px 0; font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .tf-buttons button.sel { background: var(--jade); border-color: var(--jade); color: #fff; }
+  .tf-item.correct { border-color: var(--jade); }
+  .tf-item.wrong { border-color: var(--seal); }
+
+  .coord-grid { display: inline-grid; gap: 3px; margin: 0 auto; background: var(--ink); border: 3px solid var(--ink); border-radius: 10px; overflow: hidden; }
+  .coord-cell {
+    width: 64px; height: 56px; background: var(--paper-raised); border: none; font-family: "Noto Serif SC", serif;
+    font-weight: 800; font-size: 19px; color: var(--ink); cursor: pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .coord-cell.empty { background: var(--chip-bg); cursor: default; opacity: .4; }
+  .coord-cell.flash-ok { background: color-mix(in srgb, var(--jade) 30%, var(--paper-raised)); }
+  .coord-cell.flash-bad { background: color-mix(in srgb, var(--seal) 25%, var(--paper-raised)); }
+  .coord-head { background: var(--chip-bg); font-family: "Noto Sans SC", sans-serif; font-weight: 700; font-size: 13px; color: var(--ink-soft); }
+  .coord-targets { display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 12px; }
+  .coord-target-item { font-size: 13.5px; color: var(--ink-soft); }
+  .coord-target-item.active { color: var(--ink); font-weight: 700; }
+  .coord-target-item.done { color: var(--jade); }
+
+  .rad-wrap { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+  .rad-item {
+    position: absolute; width: 46px; height: 46px; margin-left: -23px; margin-top: -23px;
+    border-radius: 50%; background: var(--chip-bg); display: flex; align-items: center; justify-content: center;
+    font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 14px; border: 1.5px solid var(--line);
+  }
+  .rad-item.start { border-color: var(--gold); border-width: 2.5px; }
+  .rad-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); text-align: center; font-size: 11.5px; color: var(--ink-soft); width: 100px; white-space: pre-line; }
+  .rad-options { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; margin-top: 14px; }
+  .rad-opt {
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 10px;
+    padding: 10px; font: inherit; font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 16px; cursor: pointer;
+  }
+  .rad-opt:hover { border-color: var(--jade); }
+  .rad-opt.correct { background: var(--jade); border-color: var(--jade); color: #fff; }
+  .rad-opt.wrong { background: var(--seal); border-color: var(--seal); color: #fff; }
+
+  .scan-chips { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .scan-chip {
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 12px;
+    padding: 14px 6px; font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 17px; cursor: pointer; text-align: center;
+  }
+  .scan-chip:hover { border-color: var(--jade); }
+  .scan-chip.correct { background: var(--jade); border-color: var(--jade); color: #fff; }
+  .scan-chip.wrong { background: var(--seal); border-color: var(--seal); color: #fff; }
+  .scan-explain { font-size: 13px; color: var(--ink-soft); text-align: center; min-height: 18px; }
+
+  .sentence-block { text-align: center; padding: 6px 4px 2px; }
+  .sentence-role { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-soft); margin-bottom: 4px; }
+  .sentence-hanzi { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: clamp(22px, 6vw, 28px); line-height: 1.2; }
+  .sentence-pinyin { font-size: 13.5px; color: var(--ink-soft); margin-top: 2px; }
+  .sentence-de { font-size: 12.5px; color: var(--ink-soft); font-style: italic; margin-top: 2px; }
+  .target-card {
+    border: 1.5px dashed var(--seal); border-radius: 14px; padding: 12px 10px 10px; margin-bottom: 4px;
+    background: color-mix(in srgb, var(--seal) 6%, var(--paper-raised));
+  }
+  .target-card .sentence-role { color: var(--seal); }
+  .current-card { border: 1px solid var(--line); border-radius: 14px; padding: 14px 10px 12px; }
+  .slot-group { margin-top: 12px; }
+  .slot-title { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-bottom: 8px; font-weight: 600; }
+  .slot-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .slot-btn {
+    border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 10px;
+    padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; display: flex; flex-direction: column;
+    align-items: center; gap: 1px; min-width: 58px;
+  }
+  .slot-btn .sb-hanzi { font-family: "Noto Serif SC", serif; font-weight: 700; font-size: 16px; }
+  .slot-btn .sb-pinyin { font-size: 11px; color: var(--ink-soft); }
+  .slot-btn:hover { border-color: var(--seal); }
+  .slot-btn.active { background: var(--seal); border-color: var(--seal); color: #fff; }
+  .slot-btn.active .sb-pinyin { color: rgba(255,255,255,0.85); }
+  .path-strip { margin-top: 6px; }
+  .path-title { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-bottom: 6px; }
+  .path-list { display: flex; gap: 6px; flex-wrap: wrap; }
+  .path-chip { font-family: "Noto Serif SC", serif; font-size: 12.5px; font-weight: 600; background: var(--chip-bg); border-radius: 8px; padding: 4px 8px; }
+  .path-chip.win { background: var(--jade); color: #fff; }
+
+  .blank { display: inline-block; min-width: 1.3em; border-bottom: 2.5px solid var(--seal); color: var(--seal); }
+  .blank.filled { border-bottom-color: var(--jade); color: var(--jade); }
+  .lt-line { margin-bottom: 14px; }
+
+  .result-box { text-align: center; padding: 6px 0; }
+  .result-box .big { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 19px; color: var(--jade); }
+  .result-box p { font-size: 13.5px; color: var(--ink-soft); margin-top: 6px; }
+
+  footer.foot { text-align: center; font-size: 12px; color: var(--ink-soft); padding-top: 4px; }
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-watermark" aria-hidden="true">龙</div>
+    <p class="eyebrow"><span class="stamp">龙</span> Chinesisch Rätselmission &middot; <span id="eyebrow-lesson">Lektion 1A</span></p>
+    <h1>Panda <span class="cn" id="hero-lesson-title">您好吗？</span></h1>
+    <p class="sub">Kleine Rätsel lösen, Dumpling-Stempel sammeln und deinen Panda auf seiner
+      30-Tage-Reise begleiten &ndash; Wortschatz und Grammatik aus dem Kursbuch, in bunten Mini-Spielen.</p>
+    <div class="lesson-select-row">
+      <label for="lesson-select">Übungsbereich:</label>
+      <select id="lesson-select"></select>
+    </div>
+    <p class="lesson-note">Teil A und Teil B werden nie vermischt. "Lektion 1 (alle Teile)" übt beide
+      zusammen inkl. Satzbau. Jeder Tag, an dem du mindestens ein Rätsel löst, bringt deinen Panda
+      einen Schritt weiter auf der Karte &ndash; egal welchen Rätseltyp du wählst.</p>
+  </header>
+
+  <section class="card" id="view-adopt">
+    <img class="adopt-hero-img" src="img/idle.jpg" alt="Ein kleiner Panda sitzt und lächelt" />
+    <h2 class="section-title" style="text-align:center;">Willkommen! 🐼</h2>
+    <p class="section-sub" style="text-align:center;">Wie soll dein Panda heißen? Er wacht gleich auf und reagiert ab jetzt live auf dich.</p>
+    <div class="adopt-form">
+      <input type="text" id="adopt-name" maxlength="18" placeholder="Name deines Pandas" />
+      <button class="btn-primary" id="btn-adopt">Panda adoptieren</button>
+    </div>
+    <p class="storage-note">Dein Panda wird nur auf diesem Gerät und in diesem Browser gespeichert.
+      Wenn du Browserdaten löschst oder das Gerät wechselst, kann dein Panda verloren gehen.</p>
+    <div class="save-code-wrap">
+      <button class="btn-link" id="btn-show-import">Ich habe schon einen Panda-Code</button>
+      <div class="save-code-box" id="import-box" hidden>
+        <input type="text" id="import-code" placeholder="PANDA1-..." />
+        <div style="margin-top:8px;"><button class="btn-primary" id="btn-import-code">Code einlesen</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="view-pet" hidden>
+    <div class="stage">
+      <div class="pet-stage" id="pet-stage">
+        <span class="pet-inner" id="pet-inner">
+          <img class="pet-img" id="pet-img" src="img/idle.jpg" alt="Dein Panda" />
+        </span>
+      </div>
+    </div>
+
+    <div class="status-card">
+      <p class="p-name" id="p-name"></p>
+      <p class="p-line" id="p-born"></p>
+      <p class="p-line" id="p-day"></p>
+      <p class="p-status"><span id="p-status-icon"></span> <span id="p-status-label"></span></p>
+      <p class="dumpling-row" id="dumpling-row"></p>
+    </div>
+
+    <div class="journey-map" id="map-wrap"></div>
+
+    <p class="pass-heading">🎫 Panda-Pass</p>
+    <div class="gift-row" id="gift-row"></div>
+
+    <div class="save-code-wrap">
+      <button class="btn-link" id="btn-show-code">💾 Speichercode anzeigen</button>
+      <div class="save-code-box" id="code-box" hidden>
+        <textarea id="save-code" rows="3" readonly></textarea>
+        <p class="save-code-hint">Schreib dir diesen Code auf. Damit holst du deinen Panda auf ein
+          anderes Gerät oder nach dem Löschen der Browserdaten zurück.</p>
+      </div>
+    </div>
+
+    <div class="test-panel" id="test-panel" hidden>
+      <h3>🧪 TESTVORSCHAU</h3>
+      <p>Nur mit <code>?test=1</code> sichtbar &ndash; nicht für Schüler:innen.</p>
+      <div class="test-btns">
+        <button class="btn-primary" id="btn-test-day">+1 Tag simulieren</button>
+        <button class="btn-ghost" id="btn-test-reset">Testdaten zurücksetzen</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="view-hub" hidden>
+    <h2 class="section-title">Heutiges Rätsel wählen</h2>
+    <p class="section-sub" id="hub-sub">Jedes gelöste Rätsel bringt deinen Panda heute einen Schritt weiter.</p>
+    <div class="puzzle-grid" id="hub-grid"></div>
+    <p class="today-count" id="today-count"></p>
+  </section>
+
+  <section class="card" id="view-puzzle" hidden>
+    <div class="puzzle-panel">
+      <div class="puzzle-head">
+        <h2 id="pz-title"></h2>
+        <button class="btn-ghost" id="pz-back">Zurück</button>
+      </div>
+      <div id="pz-body"></div>
+    </div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+  <footer class="foot">Stoffgrundlage: Long neu 龙 A1&ndash;A2 &middot; HAK St. Pölten &middot; VBS Hamerlingplatz &middot; VBS Schönborngasse</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------------------------------------------------------------------
+  // CONTENT — sub-lessons are the only authored units (matching the
+  // Kursbuch's own Teil A / Teil B split). "Lektion N" and "Lektion 1-N"
+  // are computed on the fly by merging sub-lessons, never authored twice.
+  // ---------------------------------------------------------------------
+  var SUBLESSONS = {
+    l1a: {
+      id: "l1a", num: 1, part: "A", label: "1A", title: "您好吗？", available: true,
+      vocab: {
+        ni:   { hanzi: "你", pinyin: "nǐ", de: "du", pos: "pronomen", deSubj: { pronoun: "Du", verb: "bist" } },
+        nin:  { hanzi: "您", pinyin: "nín", de: "Sie", pos: "pronomen", deSubj: { pronoun: "Sie", verb: "sind" } },
+        hao:  { hanzi: "好", pinyin: "hǎo", de: "gut", pos: "adjektiv", tone4: false },
+        ma_q: { hanzi: "吗", pinyin: "ma", de: "Fragepartikel", pos: "partikel" },
+        wo:   { hanzi: "我", pinyin: "wǒ", de: "ich", pos: "pronomen", deSubj: { pronoun: "Ich", verb: "bin" } },
+        hen:  { hanzi: "很", pinyin: "hěn", de: "sehr", pos: "adverb" },
+        ne:   { hanzi: "呢", pinyin: "ne", de: "Fragepartikel", pos: "partikel" },
+        mmhh: { hanzi: "马马虎虎", pinyin: "mǎmǎ-hūhū", de: "es geht so", pos: "redewendung" },
+        zj:   { hanzi: "再见", pinyin: "zàijiàn", de: "Auf Wiedersehen", pos: "redewendung" }
+      },
+      vocabIndex: ["ni","nin","hao","ma_q","wo","hen","ne","mmhh","zj"],
+      sudokuGroups: [["ni","nin","hao","ma_q"], ["ni","wo","hao","hen"], ["nin","wo","ne","zj"]],
+      tfBank: [
+        { text: "很 bedeutet „sehr“.", correct: true },
+        { text: "吗 ist eine Fragepartikel.", correct: true },
+        { text: "您 ist eine besonders höfliche Anrede.", correct: true },
+        { text: "再见 heißt „Auf Wiedersehen“.", correct: true },
+        { text: "呢 ist eine Fragepartikel für Rückfragen (z. B. „und du?“).", correct: true },
+        { text: "我 bedeutet „du“.", correct: false },
+        { text: "Folgen zwei 3. Töne aufeinander, klingt der erste wie ein 2. Ton.", correct: true }
+      ],
+      scannerBank: [
+        { items: ["ni", "nin", "wo", "hao"], oddIndex: 3, why: "你/您/我 sind Pronomen, 好 ist kein Pronomen." },
+        { items: ["ni", "pinyin:wǒ", "hao", "hen"], oddIndex: 1, why: "wǒ ist als einziges Wort in Pinyin geschrieben, die anderen sind Hanzi." },
+        { items: ["ni", "nin", "wo", "zj"], oddIndex: 3, why: "你/您/我 sind Pronomen, 再见 ist eine Abschiedsfloskel." },
+        { items: ["pinyin:nǐ", "nin", "wo", "hao"], oddIndex: 0, why: "nǐ ist als einziges Wort in Pinyin geschrieben, der Rest ist Hanzi." }
+      ]
+    },
+    l1b: {
+      id: "l1b", num: 1, part: "B", label: "1B", title: "你忙吗？", available: true,
+      vocab: {
+        mang: { hanzi: "忙", pinyin: "máng", de: "beschäftigt", pos: "adjektiv", tone4: false },
+        lei:  { hanzi: "累", pinyin: "lèi", de: "erschöpft", pos: "adjektiv", tone4: true },
+        e:    { hanzi: "饿", pinyin: "è", de: "hungrig", pos: "adjektiv", tone4: true },
+        ke:   { hanzi: "渴", pinyin: "kě", de: "durstig", pos: "adjektiv", tone4: false },
+        bu:   { hanzi: "不", pinyin: "bù", de: "nicht / nein", pos: "negation" }
+      },
+      vocabIndex: ["mang","lei","e","ke","bu"],
+      sudokuGroups: [["mang","lei","e","ke"], ["mang","lei","e","bu"], ["lei","e","ke","bu"]],
+      tfBank: [
+        { text: "不 steht nach dem Adjektiv, nicht davor.", correct: false },
+        { text: "累 bedeutet „durstig“.", correct: false },
+        { text: "渴 bedeutet „hungrig“.", correct: false },
+        { text: "忙 bedeutet „beschäftigt sein“.", correct: true },
+        { text: "渴 bedeutet „durstig“.", correct: true }
+      ],
+      scannerBank: [
+        { items: ["mang", "lei", "e", "bu"], oddIndex: 3, why: "忙/累/饿 sind Adjektive, 不 ist eine Verneinung." },
+        { items: ["lei", "e", "ke", "bu"], oddIndex: 3, why: "累/饿/渴 sind Adjektive, 不 ist eine Verneinung." },
+        { items: ["mang", "e", "ke", "bu"], oddIndex: 3, why: "忙/饿/渴 sind Adjektive, 不 ist eine Verneinung." }
+      ]
+    }
+  };
+  var LESSON_TREE = [
+    { num: 1, parts: ["l1a", "l1b"] }
+  ];
+
+  // ---------------------------------------------------------------------
+  // UNIT RESOLUTION — merges sub-lessons into the selected practice unit
+  // (a single part, a whole lesson number, or a cumulative "1-N" range).
+  // ---------------------------------------------------------------------
+  function mergeUnits(subIds) {
+    var vocab = {}, vocabIndex = [], sudokuGroups = [], tfBank = [], scannerBank = [];
+    subIds.forEach(function (sid) {
+      var u = SUBLESSONS[sid];
+      if (!u || !u.available) return;
+      Object.keys(u.vocab).forEach(function (k) {
+        if (!(k in vocab)) { vocab[k] = u.vocab[k]; vocabIndex.push(k); }
+      });
+      sudokuGroups = sudokuGroups.concat(u.sudokuGroups);
+      tfBank = tfBank.concat(u.tfBank);
+      scannerBank = scannerBank.concat(u.scannerBank);
+    });
+    var hasPronomen = vocabIndex.some(function (k) { return vocab[k].pos === "pronomen"; });
+    var hasAdjektiv = vocabIndex.some(function (k) { return vocab[k].pos === "adjektiv"; });
+    var hasNegation = vocabIndex.some(function (k) { return vocab[k].pos === "negation"; });
+    var hasAdverb = vocabIndex.some(function (k) { return vocab[k].pos === "adverb"; });
+    return {
+      vocab: vocab, vocabIndex: vocabIndex, sudokuGroups: sudokuGroups, tfBank: tfBank, scannerBank: scannerBank,
+      morphEnabled: hasPronomen && hasAdjektiv && hasNegation && hasAdverb
+    };
+  }
+
+  function resolveUnit(id) {
+    if (SUBLESSONS[id]) return mergeUnits([id]);
+    var mRange = /^l(\d+)-(\d+)$/.exec(id);
+    if (mRange) {
+      var start = parseInt(mRange[1], 10), end = parseInt(mRange[2], 10), parts = [];
+      LESSON_TREE.forEach(function (e) { if (e.num >= start && e.num <= end) parts = parts.concat(e.parts); });
+      return mergeUnits(parts);
+    }
+    var mNum = /^l(\d+)$/.exec(id);
+    if (mNum) {
+      var entry = LESSON_TREE.filter(function (e) { return e.num === parseInt(mNum[1], 10); })[0];
+      return mergeUnits(entry ? entry.parts : []);
+    }
+    return mergeUnits(SUBLESSONS.l1a ? ["l1a"] : []);
+  }
+  function curUnit() { return resolveUnit(pet.currentLesson); }
+  function lessonGroupKey(id) {
+    var mRange = /^l(\d+)-(\d+)$/.exec(id);
+    if (mRange) return "L" + mRange[1] + "-" + mRange[2];
+    var mNum = /^l(\d+)/.exec(id);
+    return mNum ? "L" + mNum[1] : id;
+  }
+  function unitLabel(id) {
+    if (SUBLESSONS[id]) return "Lektion " + SUBLESSONS[id].label;
+    var mRange = /^l(\d+)-(\d+)$/.exec(id);
+    if (mRange) return "Lektion " + mRange[1] + "–" + mRange[2];
+    var mNum = /^l(\d+)$/.exec(id);
+    if (mNum) return "Lektion " + mNum[1];
+    return id;
+  }
+
+  // ---------------------------------------------------------------------
+  // UTILS
+  // ---------------------------------------------------------------------
+  function rint(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pick(arr) { return arr[rint(0, arr.length - 1)]; }
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = rint(0, i);
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function sample(arr, n) { return shuffle(arr).slice(0, Math.min(n, arr.length)); }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  function daysBetween(a, b) {
+    var da = new Date(a + "T00:00:00"), db = new Date(b + "T00:00:00");
+    return Math.round((db - da) / 86400000);
+  }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  function lsGet(key, fallback) { try { var v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { return fallback; } }
+  function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+  function vocabDisplay(idOrPinyin) {
+    if (typeof idOrPinyin === "string" && idOrPinyin.indexOf("pinyin:") === 0) {
+      return { hanzi: idOrPinyin.slice(7), pinyin: idOrPinyin.slice(7), isPinyinLiteral: true };
+    }
+    var v = curUnit().vocab[idOrPinyin];
+    return { hanzi: v.hanzi, pinyin: v.pinyin, de: v.de, pos: v.pos };
+  }
+
+  // ---------------------------------------------------------------------
+  // SUDOKU ENGINE (4x4, 2x2 boxes) — generation + uniqueness check
+  // ---------------------------------------------------------------------
+  var BASE_GRID = [[0,1,2,3],[2,3,0,1],[1,0,3,2],[3,2,1,0]];
+
+  function randomValidGrid() {
+    var bandOrder = shuffle([0, 1]);
+    var rowsInBand = [shuffle([0, 1]), shuffle([0, 1])];
+    var rowOrder = [];
+    bandOrder.forEach(function (b) { rowsInBand[b].forEach(function (r) { rowOrder.push(b * 2 + r); }); });
+
+    var stackOrder = shuffle([0, 1]);
+    var colsInStack = [shuffle([0, 1]), shuffle([0, 1])];
+    var colOrder = [];
+    stackOrder.forEach(function (s) { colsInStack[s].forEach(function (c) { colOrder.push(s * 2 + c); }); });
+
+    var symbolMap = shuffle([0, 1, 2, 3]);
+
+    var grid = [];
+    for (var r = 0; r < 4; r++) {
+      var row = [];
+      for (var c = 0; c < 4; c++) {
+        row.push(symbolMap[BASE_GRID[rowOrder[r]][colOrder[c]]]);
+      }
+      grid.push(row);
+    }
+    return grid;
+  }
+
+  function countSolutions(puzzle, limit) {
+    var blanks = [];
+    for (var r = 0; r < 4; r++) for (var c = 0; c < 4; c++) if (puzzle[r][c] === null) blanks.push([r, c]);
+    var found = 0;
+    var g = puzzle.map(function (row) { return row.slice(); });
+
+    function usedAt(r, c) {
+      var u = {};
+      for (var i = 0; i < 4; i++) { if (g[r][i] !== null) u[g[r][i]] = 1; if (g[i][c] !== null) u[g[i][c]] = 1; }
+      var br = Math.floor(r / 2) * 2, bc = Math.floor(c / 2) * 2;
+      [[br,bc],[br,bc+1],[br+1,bc],[br+1,bc+1]].forEach(function (p) { if (g[p[0]][p[1]] !== null) u[g[p[0]][p[1]]] = 1; });
+      return u;
+    }
+    function backtrack(idx) {
+      if (found >= limit) return;
+      if (idx === blanks.length) { found++; return; }
+      var r = blanks[idx][0], c = blanks[idx][1];
+      var used = usedAt(r, c);
+      for (var v = 0; v < 4; v++) {
+        if (!used[v]) {
+          g[r][c] = v;
+          backtrack(idx + 1);
+          g[r][c] = null;
+          if (found >= limit) return;
+        }
+      }
+    }
+    backtrack(0);
+    return found;
+  }
+
+  function generateSudokuPuzzle(givensTarget) {
+    var solution = randomValidGrid();
+    var puzzle = solution.map(function (row) { return row.slice(); });
+    var cells = shuffle([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+    var removed = 0, total = 16;
+    cells.forEach(function (idx) {
+      if (total - removed <= givensTarget) return;
+      var r = Math.floor(idx / 4), c = idx % 4;
+      var backup = puzzle[r][c];
+      puzzle[r][c] = null;
+      if (countSolutions(puzzle, 2) === 1) { removed++; }
+      else { puzzle[r][c] = backup; }
+    });
+    var givens = [];
+    for (var r = 0; r < 4; r++) { var row = []; for (var c = 0; c < 4; c++) row.push(puzzle[r][c] !== null); givens.push(row); }
+    return { solution: solution, givens: givens };
+  }
+
+  // ---------------------------------------------------------------------
+  // STATE / PERSISTENCE — localStorage only. No login, no accounts,
+  // no shared/cloud storage: each browser keeps its own panda.
+  // ---------------------------------------------------------------------
+  var PET_KEY = "raetselmission_panda_v3";
+  var PET_KEY_V2 = "raetselmission_panda_v2";
+  var PET_KEY_V1 = "raetselmission_panda_v1";
+  var GOAL_DAYS = 30; // extend later (60/90/Semester) just by raising this + GIFT_MILESTONES — never resets saved data.
+  var GIFT_MILESTONES = [
+    { count: 7, icon: "🎋", label: "Erster Bambus", type: "bamboo1" },
+    { count: 14, icon: "🎋🎋", label: "Zweiter Bambus", type: "bamboo2" },
+    { count: 21, icon: "🥋", label: "Kung-Fu freigeschaltet", type: "kungfu" },
+    { count: 30, icon: "🏅", label: "30-Tage-Abzeichen", type: "badge" }
+    // 60/90 Tage bzw. Semester + 🎓 Abschlusshut: bewusst noch nicht eingebaut, folgt später.
+  ];
+  var MAP_ROWS = [
+    { zone: "z1", label: "🎋 Bambuswald", start: 1, end: 6 },
+    { zone: "z2", label: "🏫 Schule", start: 7, end: 12 },
+    { zone: "z3", label: "🌉 Brücke über den Fluss", start: 13, end: 18 },
+    { zone: "z4", label: "⛰️ Hügel & 亭 Pavillon", start: 19, end: 24 },
+    { zone: "z5", label: "🏆 Zielgebiet", start: 25, end: 30 }
+  ];
+
+  // ---------------------------------------------------------------------
+  // PANDA-BILDZUSTÄNDE — dieselbe Figur in acht Posen, als relative
+  // Projektpfade (Ordner img/). Die Bilder für "sad" und "hungry" haben
+  // die chinesische Sprechblase bereits eingezeichnet, deshalb braucht es
+  // keine zusätzliche Sprechblase im HTML.
+  // ---------------------------------------------------------------------
+  var PANDA_IMG = {
+    idle:    "img/idle.jpg",    // ruhig sitzend
+    happy:   "img/happy.jpg",   // Herzen und Sterne, Pfoten hoch
+    sad:     "img/sad.jpg",     // weint, „我想你😢"
+    hungry:  "img/hungry.jpg",  // wartet, „你在哪儿？"
+    eating:  "img/eating.jpg",  // isst Bambus
+    playing: "img/playing.jpg", // spielt mit einem Bambusstab
+    kungfu:  "img/kungfu.jpg",  // Kung Fu mit zwei Bambusstöcken
+    badge:   "img/badge.jpg"    // Medaille zum 30-Tage-Ziel
+  };
+
+  var DEFAULT_PET = {
+    adopted: false, name: "", birth: "", lastVisit: "",
+    lastCareDate: "", currentLesson: "l1a", solvedToday: [], solvedDays: [], giftsOpened: []
+  };
+
+  var pet = lsGet(PET_KEY, null);
+  if (!pet) {
+    var v2 = lsGet(PET_KEY_V2, null);
+    if (v2 && v2.adopted) {
+      pet = Object.assign({}, DEFAULT_PET, {
+        adopted: true, name: v2.name, birth: v2.birth, lastVisit: v2.lastVisit || todayStr(),
+        lastCareDate: v2.lastCareDate || v2.birth, currentLesson: v2.currentLesson || "l1a",
+        solvedDays: v2.lastCareDate ? [v2.lastCareDate] : []
+      });
+    } else {
+      var v1 = lsGet(PET_KEY_V1, null);
+      if (v1 && v1.birth && (v1.hatched || (v1.profile && v1.profile.vorname))) {
+        pet = Object.assign({}, DEFAULT_PET, {
+          adopted: true, name: v1.name || "小龙", birth: v1.birth, lastVisit: v1.lastVisit || todayStr(),
+          lastCareDate: v1.lastSolvedDate || v1.birth, currentLesson: v1.currentLesson || "l1a",
+          solvedDays: v1.lastSolvedDate ? [v1.lastSolvedDate] : []
+        });
+      } else {
+        pet = Object.assign({}, DEFAULT_PET);
+      }
+    }
+  }
+  if (!pet.solvedToday) pet.solvedToday = [];
+  if (!pet.solvedDays) pet.solvedDays = [];
+  if (!pet.giftsOpened) pet.giftsOpened = [];
+  function savePet() { lsSet(PET_KEY, pet); }
+
+  function formatDateDE(dateStr) {
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString("de-AT");
+  }
+  function isNightTime() {
+    var h = new Date().getHours();
+    return h >= 22 || h < 7;
+  }
+  function ageDays() { return daysBetween(pet.birth, todayStr()) + 1; }
+  function daysSinceCare() {
+    if (!pet.lastCareDate) return 99;
+    return daysBetween(pet.lastCareDate, todayStr());
+  }
+  function statusOf() {
+    var d = daysSinceCare();
+    if (d <= 0) return { icon: "😊", label: "glücklich" };
+    if (d === 1) return { icon: "🙂", label: "zufrieden" };
+    if (d === 2) return { icon: "😴", label: "wartet auf dich" };
+    return { icon: "⚠️", label: "braucht Pflege" };
+  }
+  function dumplingCount() { return pet.solvedDays.length; }
+  function growthStageOf(dCount) {
+    if (dCount < 7) return "baby";
+    if (dCount < 14) return "young";
+    if (dCount < 21) return "adult";
+    return "elder";
+  }
+  function stageUnlocked(stage, dCount) {
+    if (stage === 1) return true;
+    if (stage === 2) return dCount >= 7;
+    if (stage === 3) return dCount >= 14;
+    return dCount >= 21;
+  }
+  function stageThreshold(stage) { return stage === 2 ? 7 : (stage === 3 ? 14 : 21); }
+
+  // ---------------------------------------------------------------------
+  // UI ELEMENTS
+  // ---------------------------------------------------------------------
+  var el = {
+    eyebrowLesson: document.getElementById("eyebrow-lesson"),
+    heroLessonTitle: document.getElementById("hero-lesson-title"),
+    lessonSelect: document.getElementById("lesson-select"),
+    toast: document.getElementById("toast"),
+    viewAdopt: document.getElementById("view-adopt"),
+    viewPet: document.getElementById("view-pet"), viewHub: document.getElementById("view-hub"),
+    viewPuzzle: document.getElementById("view-puzzle"),
+    hubGrid: document.getElementById("hub-grid"),
+    todayCount: document.getElementById("today-count"),
+    pzTitle: document.getElementById("pz-title"), pzBody: document.getElementById("pz-body"), pzBack: document.getElementById("pz-back"),
+    petStage: document.getElementById("pet-stage"), petInner: document.getElementById("pet-inner"),
+    petImg: document.getElementById("pet-img"),
+    pName: document.getElementById("p-name"), pBorn: document.getElementById("p-born"), pDay: document.getElementById("p-day"),
+    pStatusIcon: document.getElementById("p-status-icon"), pStatusLabel: document.getElementById("p-status-label"),
+    dumplingRow: document.getElementById("dumpling-row"),
+    mapWrap: document.getElementById("map-wrap"), giftRow: document.getElementById("gift-row"),
+    testPanel: document.getElementById("test-panel")
+  };
+
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------------------------------------------------------------------
+  // PANDA-ZUSTAND — welches Bild gerade "in Ruhe" gilt, plus kurze
+  // Reaktionen, die sich vorübergehend darüberlegen.
+  // ---------------------------------------------------------------------
+  var petReactionActive = false;
+  var petReactionTimer = null;
+
+  function resolvePandaState() {
+    if (dumplingCount() >= GOAL_DAYS) return "badge"; // nach dem Ziel bleibt der Panda stolz
+    var label = statusOf().label;
+    if (label === "glücklich") return "happy";
+    if (label === "zufrieden") return "idle";
+    if (label === "wartet auf dich") return "hungry";
+    return "sad";
+  }
+
+  function setPandaImage(state) {
+    var url = PANDA_IMG[state] || PANDA_IMG.idle;
+    if (el.petImg.dataset.state === state) return;
+    el.petImg.dataset.state = state;
+    if (reduceMotion) { el.petImg.src = url; return; }
+    el.petImg.classList.add("swap-out");
+    setTimeout(function () {
+      el.petImg.src = url;
+      el.petImg.classList.remove("swap-out");
+    }, 160);
+  }
+
+  function hop() {
+    if (reduceMotion) return;
+    el.petInner.classList.remove("pet-hop");
+    void el.petInner.offsetWidth; // Neustart der Animation erzwingen
+    el.petInner.classList.add("pet-hop");
+  }
+
+  function reactPanda(state, ms) {
+    clearTimeout(petReactionTimer);
+    petReactionActive = true;
+    setPandaImage(state);
+    hop();
+    petReactionTimer = setTimeout(function () {
+      petReactionActive = false;
+      setPandaImage(resolvePandaState());
+    }, ms);
+  }
+  function celebrate() { reactPanda("happy", 1600); }
+
+  function applyGate() {
+    el.viewAdopt.hidden = pet.adopted;
+    el.viewPet.hidden = !pet.adopted;
+    el.viewHub.hidden = !pet.adopted;
+  }
+  document.getElementById("btn-adopt").addEventListener("click", function () {
+    var input = document.getElementById("adopt-name");
+    var name = input.value.trim().slice(0, 18);
+    if (!name) { toast("Bitte gib deinem Panda einen Namen."); return; }
+    pet.name = name;
+    pet.birth = todayStr();
+    pet.lastVisit = todayStr();
+    pet.lastCareDate = todayStr();
+    pet.adopted = true;
+    savePet();
+    applyGate();
+    renderPet();
+  });
+
+  function renderLessonSelect() {
+    var sel = el.lessonSelect;
+    sel.innerHTML = "";
+    LESSON_TREE.forEach(function (entry) {
+      var grp = document.createElement("optgroup");
+      grp.label = "Lektion " + entry.num;
+      entry.parts.forEach(function (pid) {
+        var u = SUBLESSONS[pid];
+        var opt = document.createElement("option");
+        opt.value = pid;
+        opt.textContent = u.label + (u.title ? " – " + u.title : "") + (u.available ? "" : " (bald)");
+        opt.disabled = !u.available;
+        grp.appendChild(opt);
+      });
+      if (entry.parts.length > 1) {
+        var anyAvail = entry.parts.some(function (pid) { return SUBLESSONS[pid].available; });
+        var optAll = document.createElement("option");
+        optAll.value = "l" + entry.num;
+        optAll.textContent = "Lektion " + entry.num + " (alle Teile)";
+        optAll.disabled = !anyAvail;
+        grp.appendChild(optAll);
+      }
+      sel.appendChild(grp);
+    });
+    var maxNum = Math.max.apply(null, LESSON_TREE.map(function (e) { return e.num; }));
+    if (maxNum >= 2) {
+      var cumGrp = document.createElement("optgroup");
+      cumGrp.label = "Kumulative Wiederholung";
+      for (var end = 2; end <= maxNum; end++) {
+        var opt = document.createElement("option");
+        opt.value = "l1-" + end;
+        opt.textContent = "Lektion 1–" + end;
+        cumGrp.appendChild(opt);
+      }
+      sel.appendChild(cumGrp);
+    }
+    sel.value = pet.currentLesson;
+  }
+  el.lessonSelect.addEventListener("change", function () {
+    pet.currentLesson = el.lessonSelect.value;
+    savePet(); renderPet();
+  });
+
+  function renderMap(dCount) {
+    var here = clamp(dCount, 1, GOAL_DAYS);
+    el.mapWrap.innerHTML = "";
+    MAP_ROWS.forEach(function (rowDef, rowIdx) {
+      var zoneEl = document.createElement("div");
+      zoneEl.className = "map-zone " + rowDef.zone;
+      var labelEl = document.createElement("div");
+      labelEl.className = "map-row-label";
+      labelEl.textContent = rowDef.label;
+      zoneEl.appendChild(labelEl);
+      var rowEl = document.createElement("div");
+      rowEl.className = "map-row";
+      var nums = [];
+      for (var n = rowDef.start; n <= rowDef.end; n++) nums.push(n);
+      if (rowIdx % 2 === 1) nums.reverse();
+      nums.forEach(function (n) {
+        var done = n <= dCount;
+        var isHere = n === here;
+        var milestoneDef = GIFT_MILESTONES.filter(function (m) { return m.count === n; })[0];
+        var tile = document.createElement("div");
+        tile.className = "map-tile" + (done ? " done" : "") + (isHere ? " here" : "") + (milestoneDef ? " milestone" : "");
+        if (isHere) {
+          var marker = document.createElement("img");
+          marker.className = "map-tile-marker";
+          marker.src = PANDA_IMG.idle;
+          marker.alt = "Hier ist dein Panda";
+          tile.appendChild(marker);
+        } else {
+          tile.textContent = done ? "🥟" : String(n);
+        }
+        if (milestoneDef) {
+          var mbadge = document.createElement("span");
+          mbadge.className = "tile-milestone";
+          mbadge.textContent = pet.giftsOpened.indexOf(n) !== -1 ? milestoneDef.icon : "✨";
+          tile.appendChild(mbadge);
+        }
+        if (done) {
+          var badge = document.createElement("span");
+          badge.className = "tile-num";
+          badge.textContent = n;
+          tile.appendChild(badge);
+        }
+        rowEl.appendChild(tile);
+      });
+      zoneEl.appendChild(rowEl);
+      el.mapWrap.appendChild(zoneEl);
+    });
+  }
+
+  function tryOpenGift(count) {
+    if (pet.giftsOpened.indexOf(count) !== -1) return;
+    if (dumplingCount() < count) return;
+    pet.giftsOpened.push(count);
+    savePet();
+    var m = GIFT_MILESTONES.filter(function (x) { return x.count === count; })[0];
+    toast("🎉 Geschenk geöffnet: " + m.icon + " " + m.label + "!");
+    renderPet(); // zuerst Ruhezustand, Karte und Geschenke aktualisieren
+    if (m.type === "bamboo1") reactPanda("eating", 2200);
+    if (m.type === "bamboo2") reactPanda("playing", 2200);
+    if (m.type === "kungfu") reactPanda("kungfu", 2200);
+    if (m.type === "badge") reactPanda("badge", 2200);
+  }
+
+  function renderGifts(dCount) {
+    el.giftRow.innerHTML = "";
+    GIFT_MILESTONES.forEach(function (m) {
+      var opened = pet.giftsOpened.indexOf(m.count) !== -1;
+      var ready = !opened && dCount >= m.count;
+      var chip = document.createElement("div");
+      chip.className = "gift-chip" + (opened ? " opened" : (ready ? " ready" : " locked"));
+      var icon = opened ? m.icon : (ready ? "🎁" : "❔");
+      var label = opened ? m.label : (ready ? "Öffnen!" : (m.count + " 🥟"));
+      chip.innerHTML = '<span class="gc-icon">' + icon + '</span><span>' + label + '</span>';
+      if (ready) chip.addEventListener("click", function () { tryOpenGift(m.count); });
+      el.giftRow.appendChild(chip);
+    });
+  }
+
+  function renderPet() {
+    if (!pet.adopted) return;
+    var today = todayStr();
+    if (pet.lastVisit !== today) { pet.solvedToday = []; pet.lastVisit = today; savePet(); }
+
+    el.eyebrowLesson.textContent = unitLabel(pet.currentLesson);
+    var singleSub = SUBLESSONS[pet.currentLesson];
+    el.heroLessonTitle.textContent = singleSub ? (singleSub.title || "") : "";
+    renderLessonSelect();
+
+    var days = ageDays();
+    var dCount = dumplingCount();
+    el.pName.textContent = pet.name;
+    el.pBorn.textContent = "Geboren am: " + formatDateDE(pet.birth);
+    el.pDay.textContent = "Tag " + Math.min(days, GOAL_DAYS) + " von " + GOAL_DAYS;
+
+    var status = statusOf();
+    el.pStatusIcon.textContent = status.icon;
+    el.pStatusLabel.textContent = status.label;
+    el.dumplingRow.textContent = "🥟 " + dCount + " / " + GOAL_DAYS + " gesammelt";
+
+    el.petStage.dataset.stage = growthStageOf(dCount);
+    if (!petReactionActive) setPandaImage(resolvePandaState());
+
+    renderMap(dCount);
+    renderGifts(dCount);
+    renderHub();
+  }
+
+  function renderHub() {
+    var unit = curUnit();
+    var vocabCount = Object.keys(unit.vocab).length;
+    var dCount = dumplingCount();
+    var availByType = {
+      matchPyHz: vocabCount >= 3, matchPyDe: vocabCount >= 3, matchHzDe: vocabCount >= 3,
+      triplets: vocabCount >= 3,
+      geheimcode: unit.tfBank.length >= 4,
+      koordinaten: vocabCount >= 4, coderad: vocabCount >= 4,
+      scanner: unit.scannerBank.length > 0,
+      satzmorph: unit.morphEnabled, luckentext: unit.morphEnabled,
+      pinyinSudoku: unit.sudokuGroups.length > 0, hanziSudoku: unit.sudokuGroups.length > 0
+    };
+    el.hubGrid.innerHTML = "";
+    PUZZLE_DEFS.forEach(function (def) {
+      var unlocked = stageUnlocked(def.stage, dCount);
+      var vocabOk = !!availByType[def.type];
+      var ok = vocabOk && unlocked;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "puzzle-btn" + (unlocked ? "" : " stage-locked");
+      btn.disabled = !ok;
+      var doneKey = pet.currentLesson + ":" + def.type;
+      var done = pet.solvedToday.indexOf(doneKey) !== -1;
+      var html = '<span class="cn-tag">' + def.cn + '</span><span class="de-tag">' + def.de + '</span>';
+      if (!unlocked) html += '<span class="lock-tag">🔒 ' + stageThreshold(def.stage) + ' 🥟</span>';
+      else if (done && ok) html += '<span class="done-dot"></span>';
+      btn.innerHTML = html;
+      if (!vocabOk && unlocked) btn.title = "In diesem Bereich noch nicht genug Wortschatz.";
+      btn.addEventListener("click", function () { if (ok) openPuzzle(def.type); });
+      el.hubGrid.appendChild(btn);
+    });
+    var solvedThisUnit = pet.solvedToday.filter(function (k) { return k.indexOf(pet.currentLesson + ":") === 0; }).length;
+    el.todayCount.textContent = "Heute in " + unitLabel(pet.currentLesson) + " gelöst: " + solvedThisUnit + " von " + PUZZLE_DEFS.length + " Aufgabentypen";
+  }
+
+  function toast(msg) {
+    el.toast.textContent = msg;
+    el.toast.classList.add("show");
+    setTimeout(function () { el.toast.classList.remove("show"); }, 1600);
+  }
+
+  // ---------------------------------------------------------------------
+  // PUZZLE FLOW
+  // ---------------------------------------------------------------------
+  var activePuzzle = null;
+
+  var PUZZLE_DEFS = [
+    { type: "matchPyHz", stage: 1, cn: "配对", de: "Pinyin ↔ Hanzi", builder: function () { buildMatching("py-hz"); } },
+    { type: "matchPyDe", stage: 1, cn: "配对", de: "Pinyin ↔ Deutsch", builder: function () { buildMatching("py-de"); } },
+    { type: "matchHzDe", stage: 1, cn: "配对", de: "Hanzi ↔ Deutsch", builder: function () { buildMatching("hz-de"); } },
+    { type: "triplets", stage: 1, cn: "三胞胎", de: "Drillinge", builder: buildTriplets },
+    { type: "geheimcode", stage: 1, cn: "密码", de: "Geheimcode", builder: buildGeheimcode },
+    { type: "scanner", stage: 1, cn: "扫描", de: "Code-Scanner", builder: buildScanner },
+    { type: "luckentext", stage: 1, cn: "填空", de: "Lückentext", builder: buildLuckentext },
+    { type: "koordinaten", stage: 2, cn: "坐标", de: "Koordinaten-Rätsel", builder: buildKoordinaten },
+    { type: "coderad", stage: 2, cn: "转盘", de: "Code-Rad", builder: buildCoderad },
+    { type: "satzmorph", stage: 3, cn: "变句", de: "Satzmorph", builder: buildSatzmorph },
+    { type: "pinyinSudoku", stage: 4, cn: "拼音", de: "Pinyin-Sudoku", builder: function () { buildSudoku("pinyin"); } },
+    { type: "hanziSudoku", stage: 4, cn: "汉字", de: "Hanzi-Sudoku", builder: function () { buildSudoku("hanzi"); } }
+  ];
+
+  function openPuzzle(type) {
+    el.viewPet.hidden = true; el.viewHub.hidden = true;
+    el.viewPuzzle.hidden = false;
+    activePuzzle = type;
+    var def = PUZZLE_DEFS.filter(function (d) { return d.type === type; })[0];
+    el.pzTitle.textContent = def.cn + " " + def.de;
+    def.builder();
+  }
+
+  function closePuzzle() {
+    el.viewPuzzle.hidden = true;
+    el.viewPet.hidden = false; el.viewHub.hidden = false;
+    activePuzzle = null;
+    renderPet();
+  }
+  el.pzBack.addEventListener("click", closePuzzle);
+
+  function onPuzzleSolved() {
+    var lessonId = pet.currentLesson;
+    var key = lessonId + ":" + activePuzzle;
+    var already = pet.solvedToday.indexOf(key) !== -1;
+    var newDay = false;
+    if (!already) {
+      pet.solvedToday.push(key);
+      pet.lastCareDate = todayStr();
+      if (pet.solvedDays.indexOf(todayStr()) === -1) { pet.solvedDays.push(todayStr()); newDay = true; }
+      savePet();
+    }
+    celebrate();
+    var line = already
+      ? "Heute in diesem Bereich schon einmal gelöst, aber gut geübt!"
+      : (newDay ? "Dein Panda ist heute einen Schritt weiter gewandert! 🥟" : "Dein Panda freut sich über deinen Fleiß.");
+    var box = document.createElement("div");
+    box.className = "result-box";
+    box.innerHTML = '<p class="big">Richtig gelöst!</p>' +
+      '<p>' + line + '</p>' +
+      '<button class="btn-primary" id="pz-done">Zurück zum Panda</button>';
+    el.pzBody.appendChild(box);
+    document.getElementById("pz-done").addEventListener("click", closePuzzle);
+  }
+
+  // ---- Zuordnung (Matching) ----
+  function buildMatching(mode) {
+    var unit = curUnit();
+    var allIds = Object.keys(unit.vocab);
+    var ids = sample(allIds, Math.min(4, allIds.length));
+    function leftLabel(id) { var v = unit.vocab[id]; return mode === "hz-de" ? v.hanzi : v.pinyin; }
+    function rightLabel(id) { var v = unit.vocab[id]; return mode === "py-hz" ? v.hanzi : v.de; }
+    var leftOrder = shuffle(ids), rightOrder = shuffle(ids);
+    var matched = {}, selLeft = null, selRight = null;
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:10px;">Finde die passenden Paare.</p>' +
+      '<div class="match-grid"><div class="match-col" id="match-left"></div><div class="match-col" id="match-right"></div></div>';
+    var leftCol = document.getElementById("match-left"), rightCol = document.getElementById("match-right");
+
+    function renderCols() {
+      [ [leftCol, leftOrder, true], [rightCol, rightOrder, false] ].forEach(function (spec) {
+        var container = spec[0], order = spec[1], isLeft = spec[2];
+        container.innerHTML = "";
+        order.forEach(function (id) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "match-chip";
+          b.textContent = isLeft ? leftLabel(id) : rightLabel(id);
+          if (matched[id]) { b.classList.add("matched"); b.disabled = true; }
+          if ((isLeft && selLeft === id) || (!isLeft && selRight === id)) b.classList.add("sel");
+          b.addEventListener("click", function () {
+            if (matched[id]) return;
+            if (isLeft) selLeft = id; else selRight = id;
+            renderCols();
+            if (selLeft && selRight) {
+              if (selLeft === selRight) {
+                matched[selLeft] = true; selLeft = null; selRight = null;
+                renderCols();
+                if (Object.keys(matched).length === ids.length) onPuzzleSolved();
+              } else {
+                toast("Nicht ganz – versuch's nochmal.");
+                setTimeout(function () { selLeft = null; selRight = null; renderCols(); }, 500);
+              }
+            }
+          });
+          container.appendChild(b);
+        });
+      });
+    }
+    renderCols();
+  }
+
+  // ---- 三胞胎 Drillinge (Triplets: Hanzi + Pinyin + Deutsch) ----
+  function buildTriplets() {
+    var unit = curUnit();
+    var allIds = Object.keys(unit.vocab);
+    var ids = sample(allIds, Math.min(3, allIds.length));
+    var cols = { hanzi: shuffle(ids), pinyin: shuffle(ids), de: shuffle(ids) };
+    var sel = { hanzi: null, pinyin: null, de: null };
+    var matched = {};
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:10px;">三胞胎 – finde die drei zusammengehörenden Geschwister: Hanzi, Pinyin, Deutsch.</p>' +
+      '<div class="triplet-grid"><div class="match-col" id="trip-hanzi"></div><div class="match-col" id="trip-pinyin"></div><div class="match-col" id="trip-de"></div></div>';
+    var colEls = { hanzi: document.getElementById("trip-hanzi"), pinyin: document.getElementById("trip-pinyin"), de: document.getElementById("trip-de") };
+    function labelFor(key, id) { var v = unit.vocab[id]; return key === "hanzi" ? v.hanzi : (key === "pinyin" ? v.pinyin : v.de); }
+
+    function renderAll() {
+      Object.keys(cols).forEach(function (key) {
+        var container = colEls[key];
+        container.innerHTML = "";
+        cols[key].forEach(function (id) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "match-chip";
+          b.textContent = labelFor(key, id);
+          if (matched[id]) { b.classList.add("matched"); b.disabled = true; }
+          if (sel[key] === id) b.classList.add("sel");
+          b.addEventListener("click", function () {
+            if (matched[id]) return;
+            sel[key] = id;
+            renderAll();
+            if (sel.hanzi && sel.pinyin && sel.de) {
+              if (sel.hanzi === sel.pinyin && sel.pinyin === sel.de) {
+                matched[sel.hanzi] = true;
+                sel = { hanzi: null, pinyin: null, de: null };
+                renderAll();
+                if (Object.keys(matched).length === ids.length) onPuzzleSolved();
+              } else {
+                toast("Noch nicht die richtigen Drillinge.");
+                setTimeout(function () { sel = { hanzi: null, pinyin: null, de: null }; renderAll(); }, 600);
+              }
+            }
+          });
+          container.appendChild(b);
+        });
+      });
+    }
+    renderAll();
+  }
+
+  // ---- Pinyin- / Hanzi-Sudoku ----
+  function buildSudoku(mode) {
+    var unit = curUnit();
+    var group = pick(unit.sudokuGroups);
+    var puzzle = generateSudokuPuzzle(8);
+    var symbolFor = function (v) { var e = unit.vocab[group[v]]; return mode === "pinyin" ? e.pinyin : e.hanzi; };
+    var current = puzzle.givens.map(function (row, r) { return row.map(function (g, c) { return g ? puzzle.solution[r][c] : null; }); });
+    var selected = null;
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:10px;">Jede Zeile, Spalte und jedes 2×2-Feld enthält jedes Wort genau einmal.</p>' +
+      '<div class="sudoku-board" id="sk-board"></div>' +
+      '<div class="sk-palette" id="sk-palette"></div>' +
+      '<div style="text-align:center;margin-top:14px;"><button class="btn-primary" id="sk-check">Prüfen</button></div>';
+
+    var boardEl = document.getElementById("sk-board");
+    var paletteEl = document.getElementById("sk-palette");
+
+    [0,1,2,3].forEach(function (v) {
+      var b = document.createElement("button");
+      b.className = "sk-sym"; b.type = "button"; b.textContent = symbolFor(v);
+      b.addEventListener("click", function () {
+        if (selected === null) return;
+        var r = selected[0], c = selected[1];
+        if (puzzle.givens[r][c]) return;
+        current[r][c] = v;
+        renderBoard();
+      });
+      paletteEl.appendChild(b);
+    });
+
+    function conflicts() {
+      var bad = {};
+      function mark(cells) {
+        var seen = {};
+        cells.forEach(function (p) {
+          var v = current[p[0]][p[1]];
+          if (v === null) return;
+          var key = p[0] + "," + p[1];
+          if (seen[v] !== undefined) { bad[key] = 1; bad[seen[v]] = 1; } else { seen[v] = key; }
+        });
+      }
+      for (var r = 0; r < 4; r++) mark([[r,0],[r,1],[r,2],[r,3]]);
+      for (var c = 0; c < 4; c++) mark([[0,c],[1,c],[2,c],[3,c]]);
+      [[0,0],[0,2],[2,0],[2,2]].forEach(function (o) { mark([[o[0],o[1]],[o[0],o[1]+1],[o[0]+1,o[1]],[o[0]+1,o[1]+1]]); });
+      return bad;
+    }
+
+    function renderBoard() {
+      var bad = conflicts();
+      boardEl.innerHTML = "";
+      for (var r = 0; r < 4; r++) {
+        for (var c = 0; c < 4; c++) {
+          var b = document.createElement("button");
+          b.type = "button"; b.className = "sk-cell";
+          if (c === 1) b.classList.add("br"); if (r === 1) b.classList.add("bb");
+          if (puzzle.givens[r][c]) b.classList.add("given");
+          if (selected && selected[0] === r && selected[1] === c) b.classList.add("selected");
+          if (bad[r + "," + c]) b.classList.add("conflict");
+          var v = current[r][c];
+          b.textContent = v === null ? "" : symbolFor(v);
+          b.disabled = puzzle.givens[r][c];
+          (function (rr, cc) { b.addEventListener("click", function () { selected = [rr, cc]; renderBoard(); }); })(r, c);
+          boardEl.appendChild(b);
+        }
+      }
+    }
+    renderBoard();
+
+    document.getElementById("sk-check").addEventListener("click", function () {
+      var full = current.every(function (row) { return row.every(function (v) { return v !== null; }); });
+      var bad = conflicts();
+      var ok = full && Object.keys(bad).length === 0;
+      if (ok) onPuzzleSolved();
+      else toast(full ? "Noch nicht ganz richtig – schau auf die rot markierten Felder." : "Fülle erst alle Felder aus.");
+    });
+  }
+
+  // ---- Geheimcode ----
+  function buildGeheimcode() {
+    var unit = curUnit();
+    var items = sample(unit.tfBank, 4);
+    var answers = new Array(items.length).fill(null);
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:10px;">Entscheide: wahr oder falsch?</p>' +
+      '<div class="tf-list" id="tf-list"></div>' +
+      '<div style="text-align:center;margin-top:14px;"><button class="btn-primary" id="tf-check">Prüfen</button></div>' +
+      '<p class="scan-explain" id="tf-result"></p>';
+
+    var listEl = document.getElementById("tf-list");
+    items.forEach(function (item, i) {
+      var row = document.createElement("div");
+      row.className = "tf-item";
+      row.innerHTML = '<div class="tf-text">' + item.text + '</div>' +
+        '<div class="tf-buttons"><button data-v="true">wahr</button><button data-v="false">falsch</button></div>';
+      row.querySelectorAll("button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          answers[i] = btn.dataset.v === "true";
+          row.querySelectorAll("button").forEach(function (b) { b.classList.remove("sel"); });
+          btn.classList.add("sel");
+        });
+      });
+      listEl.appendChild(row);
+    });
+
+    document.getElementById("tf-check").addEventListener("click", function () {
+      if (answers.indexOf(null) !== -1) { toast("Beantworte erst alle Aussagen."); return; }
+      var allCorrect = true;
+      var rows = listEl.querySelectorAll(".tf-item");
+      items.forEach(function (item, i) {
+        var right = answers[i] === item.correct;
+        rows[i].classList.toggle("correct", right);
+        rows[i].classList.toggle("wrong", !right);
+        if (!right) allCorrect = false;
+      });
+      if (allCorrect) {
+        var bits = items.map(function (it) { return it.correct ? "1" : "0"; }).join("");
+        var dec = parseInt(bits, 2);
+        var wordText;
+        if (dec === 0 || dec > unit.vocabIndex.length) wordText = "🐼 (Sonderfall – gut gemacht!)";
+        else { var v = unit.vocab[unit.vocabIndex[dec - 1]]; wordText = v.hanzi + " (" + v.pinyin + " – " + v.de + ")"; }
+        document.getElementById("tf-result").textContent = "Code " + bits + " = " + dec + " → " + wordText;
+        onPuzzleSolved();
+      } else {
+        toast("Noch nicht alles richtig – rot markierte Aussagen nochmal überlegen.");
+      }
+    });
+  }
+
+  // ---- Koordinaten-Rätsel ----
+  function buildKoordinaten() {
+    var unit = curUnit();
+    var allIds = Object.keys(unit.vocab);
+    var n = Math.min(9, allIds.length);
+    var cols = Math.min(3, n);
+    var rows = Math.ceil(n / cols);
+    var ids = sample(allIds, n);
+    var grid = [];
+    var idx = 0;
+    for (var r = 0; r < rows; r++) {
+      var row = [];
+      for (var c = 0; c < cols; c++) { row.push(idx < n ? ids[idx] : null); idx++; }
+      grid.push(row);
+    }
+    var targets = sample(ids, Math.min(3, n));
+    var targetIdx = 0;
+    var colLetters = ["A","B","C"].slice(0, cols);
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:10px;">Finde die passenden Felder.</p>' +
+      '<div style="display:flex;justify-content:center;"><div class="coord-grid" id="coord-grid" style="grid-template-columns:32px repeat(' + cols + ',64px);"></div></div>' +
+      '<div class="coord-targets" id="coord-targets"></div>';
+
+    var gridEl = document.getElementById("coord-grid");
+    gridEl.appendChild(document.createElement("div"));
+    colLetters.forEach(function (h) { var d = document.createElement("div"); d.className = "coord-cell coord-head"; d.textContent = h; gridEl.appendChild(d); });
+    for (var r2 = 0; r2 < rows; r2++) {
+      var rowHead = document.createElement("div"); rowHead.className = "coord-cell coord-head"; rowHead.textContent = String(r2 + 1);
+      gridEl.appendChild(rowHead);
+      for (var c2 = 0; c2 < cols; c2++) {
+        var id = grid[r2][c2];
+        var cell = document.createElement("button");
+        cell.type = "button"; cell.className = "coord-cell";
+        if (!id) { cell.classList.add("empty"); cell.disabled = true; gridEl.appendChild(cell); continue; }
+        cell.textContent = unit.vocab[id].hanzi;
+        cell.addEventListener("click", function (theId) {
+          return function () {
+            if (targetIdx >= targets.length) return;
+            var wantId = targets[targetIdx];
+            if (theId === wantId) {
+              this.classList.add("flash-ok"); markDone(targetIdx); targetIdx++;
+              if (targetIdx === targets.length) onPuzzleSolved();
+              else highlightTarget();
+            } else {
+              var self = this;
+              self.classList.add("flash-bad");
+              setTimeout(function () { self.classList.remove("flash-bad"); }, 500);
+              toast("Nicht ganz – versuch's nochmal.");
+            }
+          };
+        }(id).bind(cell));
+        gridEl.appendChild(cell);
+      }
+    }
+
+    var targetsEl = document.getElementById("coord-targets");
+    var targetRows = targets.map(function (id) {
+      var row = document.createElement("div");
+      row.className = "coord-target-item";
+      var v = unit.vocab[id];
+      row.textContent = "Finde: " + v.hanzi + " (" + v.pinyin + " – " + v.de + ")";
+      targetsEl.appendChild(row);
+      return row;
+    });
+    function highlightTarget() { targetRows.forEach(function (row, i) { row.classList.toggle("active", i === targetIdx); }); }
+    function markDone(i) { targetRows[i].classList.remove("active"); targetRows[i].classList.add("done"); }
+    highlightTarget();
+  }
+
+  // ---- Code-Rad ----
+  function buildCoderad() {
+    var unit = curUnit();
+    var allIds = Object.keys(unit.vocab);
+    var ringSize = Math.min(6, allIds.length);
+    var ids = sample(allIds, ringSize);
+    var startIdx = rint(0, ringSize - 1);
+    var step = rint(1, ringSize - 1);
+    var dir = pick([1, -1]);
+    var targetIdx = ((startIdx + dir * step) % ringSize + ringSize) % ringSize;
+    var correctId = ids[targetIdx];
+    var distractors = shuffle(ids.filter(function (id) { return id !== correctId; })).slice(0, 3);
+    var options = shuffle([correctId].concat(distractors));
+
+    el.pzBody.innerHTML =
+      '<div class="rad-wrap" id="rad-wrap"><div class="rad-center" id="rad-center"></div></div>' +
+      '<div class="rad-options" id="rad-options"></div>';
+
+    var wrap = document.getElementById("rad-wrap");
+    var R = 84;
+    ids.forEach(function (id, i) {
+      var angle = (i / ids.length) * 2 * Math.PI - Math.PI / 2;
+      var x = 110 + R * Math.cos(angle), y = 110 + R * Math.sin(angle);
+      var d = document.createElement("div");
+      d.className = "rad-item" + (i === startIdx ? " start" : "");
+      d.style.left = x + "px"; d.style.top = y + "px";
+      d.textContent = unit.vocab[id].hanzi;
+      wrap.appendChild(d);
+    });
+    document.getElementById("rad-center").textContent =
+      "Start: " + unit.vocab[ids[startIdx]].hanzi + "\n" + step + " Schritte " + (dir === 1 ? "im Uhrzeigersinn" : "gegen den Uhrzeigersinn");
+
+    var optEl = document.getElementById("rad-options");
+    options.forEach(function (id) {
+      var b = document.createElement("button");
+      b.className = "rad-opt"; b.type = "button"; b.textContent = unit.vocab[id].hanzi;
+      b.addEventListener("click", function () {
+        if (id === correctId) { b.classList.add("correct"); onPuzzleSolved(); }
+        else {
+          b.classList.add("wrong");
+          toast("Nicht ganz – zähl noch einmal die Schritte.");
+          setTimeout(function () { b.classList.remove("wrong"); }, 600);
+        }
+      });
+      optEl.appendChild(b);
+    });
+  }
+
+  // ---- Code-Scanner ----
+  function buildScanner() {
+    var unit = curUnit();
+    var entry = pick(unit.scannerBank);
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:12px;">Welches Wort passt nicht zu den anderen drei?</p>' +
+      '<div class="scan-chips" id="scan-chips"></div>' +
+      '<p class="scan-explain" id="scan-explain"></p>';
+    var chipsEl = document.getElementById("scan-chips");
+    entry.items.forEach(function (raw, i) {
+      var d = vocabDisplay(raw);
+      var b = document.createElement("button");
+      b.className = "scan-chip"; b.type = "button"; b.textContent = d.hanzi;
+      b.addEventListener("click", function () {
+        if (i === entry.oddIndex) {
+          b.classList.add("correct");
+          document.getElementById("scan-explain").textContent = entry.why;
+          onPuzzleSolved();
+        } else {
+          b.classList.add("wrong");
+          toast("Nicht ganz – überleg nochmal.");
+          setTimeout(function () { b.classList.remove("wrong"); }, 600);
+        }
+      });
+      chipsEl.appendChild(b);
+    });
+  }
+
+  // ---- Satzmorph ----
+  function buildSatzmorph() {
+    var unit = curUnit();
+    var subjIds = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "pronomen"; });
+    var adjIds = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "adjektiv"; });
+    var polIds = ["__hen__", "__bu__"];
+    var henId = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "adverb"; })[0];
+    var buId = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "negation"; })[0];
+
+    function polInfo(p) { return p === "__hen__" ? { hanzi: unit.vocab[henId].hanzi, pinyin: unit.vocab[henId].pinyin, mode: "affirm" } : { hanzi: unit.vocab[buId].hanzi, pinyin: unit.vocab[buId].pinyin, mode: "negate" }; }
+
+    function buildSentence(s) {
+      var subj = unit.vocab[subjIds[s.subj]], adj = unit.vocab[adjIds[s.adj]], pol = polInfo(polIds[s.pol]);
+      var polPinyin = pol.pinyin;
+      if (pol.mode === "negate" && adj.tone4) polPinyin = "bú";
+      var hanzi = subj.hanzi + pol.hanzi + adj.hanzi + "。";
+      var pinyin = subj.pinyin + " " + polPinyin + " " + adj.pinyin + ".";
+      var de = subj.deSubj.pronoun + " " + subj.deSubj.verb + " " + (pol.mode === "negate" ? "nicht " : "sehr ") + adj.de + ".";
+      return { hanzi: hanzi, pinyin: pinyin, de: de };
+    }
+    function sameState(a, b) { return a.subj === b.subj && a.pol === b.pol && a.adj === b.adj; }
+    function hamming(a, b) { var d = 0; if (a.subj !== b.subj) d++; if (a.pol !== b.pol) d++; if (a.adj !== b.adj) d++; return d; }
+    function randState() { return { subj: rint(0, subjIds.length - 1), pol: rint(0, 1), adj: rint(0, adjIds.length - 1) }; }
+
+    var start = randState(), target = randState();
+    while (sameState(start, target)) target = randState();
+    var st = { current: { subj: start.subj, pol: start.pol, adj: start.adj }, start: start, target: target, path: [start], moves: 0, finished: false };
+
+    el.pzBody.innerHTML =
+      '<div class="target-card sentence-block"><div class="sentence-role">Zielsatz</div>' +
+      '<div class="sentence-hanzi" id="mo-target-hanzi"></div><div class="sentence-pinyin" id="mo-target-pinyin"></div><div class="sentence-de" id="mo-target-de"></div></div>' +
+      '<div class="current-card sentence-block"><div class="sentence-role">Dein aktueller Satz</div>' +
+      '<div class="sentence-hanzi" id="mo-current-hanzi"></div><div class="sentence-pinyin" id="mo-current-pinyin"></div><div class="sentence-de" id="mo-current-de"></div>' +
+      '<div class="slot-group"><div class="slot-title">Subjekt</div><div class="slot-options" id="mo-opts-subj"></div></div>' +
+      '<div class="slot-group"><div class="slot-title">很 / 不</div><div class="slot-options" id="mo-opts-pol"></div></div>' +
+      '<div class="slot-group"><div class="slot-title">Adjektiv</div><div class="slot-options" id="mo-opts-adj"></div></div></div>' +
+      '<div class="path-strip"><div class="path-title">Dein Weg</div><div class="path-list" id="mo-path"></div></div>' +
+      '<p class="prompt-de" style="text-align:center;margin-top:10px;">Klicke pro Zug genau ein Element, um es zu ändern.</p>';
+
+    var elT = { h: document.getElementById("mo-target-hanzi"), p: document.getElementById("mo-target-pinyin"), d: document.getElementById("mo-target-de") };
+    var elC = { h: document.getElementById("mo-current-hanzi"), p: document.getElementById("mo-current-pinyin"), d: document.getElementById("mo-current-de") };
+    var optSubj = document.getElementById("mo-opts-subj"), optPol = document.getElementById("mo-opts-pol"), optAdj = document.getElementById("mo-opts-adj");
+    var pathEl = document.getElementById("mo-path");
+
+    function renderOptions(container, list, key, getHanzi, getPinyin) {
+      container.innerHTML = "";
+      list.forEach(function (val, idx) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "slot-btn" + (st.current[key] === idx ? " active" : "");
+        b.disabled = st.finished;
+        b.innerHTML = '<span class="sb-hanzi">' + getHanzi(val) + '</span><span class="sb-pinyin">' + getPinyin(val) + '</span>';
+        b.addEventListener("click", function () { applyMove(key, idx); });
+        container.appendChild(b);
+      });
+    }
+    function renderAll() {
+      var t = buildSentence(st.target);
+      elT.h.textContent = t.hanzi; elT.p.textContent = t.pinyin; elT.d.textContent = t.de;
+      var c = buildSentence(st.current);
+      elC.h.textContent = c.hanzi; elC.p.textContent = c.pinyin; elC.d.textContent = c.de;
+      renderOptions(optSubj, subjIds, "subj", function (id) { return unit.vocab[id].hanzi; }, function (id) { return unit.vocab[id].pinyin; });
+      renderOptions(optPol, polIds, "pol", function (p) { return polInfo(p).hanzi; }, function (p) { return polInfo(p).pinyin; });
+      renderOptions(optAdj, adjIds, "adj", function (id) { return unit.vocab[id].hanzi; }, function (id) { return unit.vocab[id].pinyin; });
+      pathEl.innerHTML = "";
+      st.path.forEach(function (s, i) {
+        var chip = document.createElement("span");
+        chip.className = "path-chip" + (st.finished && i === st.path.length - 1 ? " win" : "");
+        chip.textContent = buildSentence(s).hanzi;
+        pathEl.appendChild(chip);
+      });
+    }
+    function applyMove(key, idx) {
+      if (st.finished || st.current[key] === idx) return;
+      st.current[key] = idx;
+      st.moves++;
+      st.path.push({ subj: st.current.subj, pol: st.current.pol, adj: st.current.adj });
+      renderAll();
+      if (sameState(st.current, st.target)) {
+        st.finished = true;
+        var par = hamming(st.start, st.target);
+        renderAll();
+        var note = document.createElement("p");
+        note.className = "prompt-de";
+        note.style.textAlign = "center";
+        note.textContent = st.moves === par
+          ? ("Zielsatz in " + st.moves + " Zug(en) erreicht – der kürzestmögliche Weg!")
+          : ("Zielsatz in " + st.moves + " Zug(en) erreicht (kürzester Weg wäre " + par + " gewesen).");
+        el.pzBody.appendChild(note);
+        onPuzzleSolved();
+      }
+    }
+    renderAll();
+  }
+
+  // ---- Lückentext (nachgebildet nach Übungsbuch S. 14, Übung 7 "Ergänzen Sie die Dialoge") ----
+  // Prinzip: da 很/不 beide grammatikalisch möglich sind, macht die deutsche Übersetzung
+  // eindeutig, welche Antwort hier gemeint ist.
+  function buildLuckentext() {
+    var unit = curUnit();
+    var adjIds = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "adjektiv"; });
+    var buId = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "negation"; })[0];
+    var henId = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "adverb"; })[0];
+    var partikelIds = unit.vocabIndex.filter(function (k) { return unit.vocab[k].pos === "partikel"; });
+    var maId = partikelIds.filter(function (k) { return unit.vocab[k].hanzi === "吗"; })[0] || partikelIds[0];
+    var neId = partikelIds.filter(function (k) { return unit.vocab[k].hanzi === "呢"; })[0] || partikelIds[0];
+
+    var adjId = pick(adjIds);
+    var adj = unit.vocab[adjId];
+    var negative = Math.random() < 0.5;
+    var polId = negative ? buId : henId;
+
+    function polPinyinFor(id) {
+      if (id === buId) return (adj.tone4 ? "bú" : unit.vocab[buId].pinyin);
+      return unit.vocab[id].pinyin;
+    }
+
+    var b1 = null, b2 = null;
+    var opt1 = shuffle([maId, neId]);
+    var opt2 = shuffle([henId, buId]);
+
+    var deQuestion = "Deutsch: „Bist du " + adj.de + "?“";
+    var deAnswer = "Deutsch: „" + (negative ? "Nein, ich bin nicht " : "Ja, ich bin sehr ") + adj.de + ".“";
+
+    el.pzBody.innerHTML =
+      '<p class="prompt-de" style="text-align:center;margin-bottom:14px;">Ergänze den Dialog (nach Übungsbuch, „Ergänzen Sie die Dialoge“).</p>' +
+      '<div class="lt-line sentence-block">' +
+      '<div class="sentence-hanzi">你' + adj.hanzi + '<span class="blank" id="lt-b1">___</span>？</div>' +
+      '<div class="sentence-pinyin">Nǐ ' + adj.pinyin + ' <span id="lt-b1-py">___</span>?</div>' +
+      '<div class="cue-de">' + deQuestion + '</div></div>' +
+      '<div class="lt-line sentence-block">' +
+      '<div class="sentence-hanzi">我<span class="blank" id="lt-b2">___</span>' + adj.hanzi + '。</div>' +
+      '<div class="sentence-pinyin">Wǒ <span id="lt-b2-py">___</span> ' + adj.pinyin + '.</div>' +
+      '<div class="cue-de">' + deAnswer + '</div></div>' +
+      '<div class="slot-group"><div class="slot-title">Lücke 1 (Frage)</div><div class="slot-options" id="lt-opts1"></div></div>' +
+      '<div class="slot-group"><div class="slot-title">Lücke 2 (Antwort)</div><div class="slot-options" id="lt-opts2"></div></div>' +
+      '<div style="text-align:center;margin-top:14px;"><button class="btn-primary" id="lt-check">Prüfen</button></div>';
+
+    function renderOpts(container, ids, chosen, onPick) {
+      container.innerHTML = "";
+      ids.forEach(function (id) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "slot-btn" + (chosen === id ? " active" : "");
+        b.innerHTML = '<span class="sb-hanzi">' + unit.vocab[id].hanzi + '</span><span class="sb-pinyin">' + (id === buId ? polPinyinFor(id) : unit.vocab[id].pinyin) + '</span>';
+        b.addEventListener("click", function () { onPick(id); });
+        container.appendChild(b);
+      });
+    }
+    function refresh() {
+      renderOpts(document.getElementById("lt-opts1"), opt1, b1, function (id) { b1 = id; refresh(); });
+      renderOpts(document.getElementById("lt-opts2"), opt2, b2, function (id) { b2 = id; refresh(); });
+      var b1El = document.getElementById("lt-b1"), b1PyEl = document.getElementById("lt-b1-py");
+      var b2El = document.getElementById("lt-b2"), b2PyEl = document.getElementById("lt-b2-py");
+      if (b1) { b1El.textContent = unit.vocab[b1].hanzi; b1El.classList.add("filled"); b1PyEl.textContent = unit.vocab[b1].pinyin; }
+      else { b1El.textContent = "___"; b1El.classList.remove("filled"); b1PyEl.textContent = "___"; }
+      if (b2) { b2El.textContent = unit.vocab[b2].hanzi; b2El.classList.add("filled"); b2PyEl.textContent = polPinyinFor(b2); }
+      else { b2El.textContent = "___"; b2El.classList.remove("filled"); b2PyEl.textContent = "___"; }
+    }
+    refresh();
+
+    document.getElementById("lt-check").addEventListener("click", function () {
+      if (!b1 || !b2) { toast("Fülle erst beide Lücken aus."); return; }
+      if (b1 === maId && b2 === polId) {
+        onPuzzleSolved();
+      } else {
+        toast("Noch nicht ganz richtig – schau dir die deutschen Hinweise nochmal an.");
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // IDLE TICS — ab und zu macht der Panda von selbst etwas: Bambus spielen
+  // oder Kung Fu üben, sobald das freigeschaltet ist. Das Wippen läuft
+  // ohnehin durchgehend per CSS.
+  // ---------------------------------------------------------------------
+  function scheduleIdleTic() {
+    var delay = 7000 + Math.random() * 7000;
+    setTimeout(function () {
+      if (pet.adopted && document.visibilityState !== "hidden" && !petReactionActive) {
+        var kungfuOpened = pet.giftsOpened.indexOf(21) !== -1;
+        var bambooOpened = pet.giftsOpened.indexOf(7) !== -1 || pet.giftsOpened.indexOf(14) !== -1;
+        var r = Math.random();
+        if (kungfuOpened && r < 0.18) reactPanda("kungfu", 1800);
+        else if (bambooOpened && r < 0.38) reactPanda("playing", 1800);
+        else if (r < 0.5) hop();
+      }
+      scheduleIdleTic();
+    }, delay);
+  }
+
+  // ---------------------------------------------------------------------
+  // SPEICHERCODE — Fortschritt als Text mitnehmen, ganz ohne Konto.
+  // ---------------------------------------------------------------------
+  var CODE_PREFIX = "PANDA1-";
+  function buildSaveCode() {
+    var subset = {
+      name: pet.name, birth: pet.birth, lastCareDate: pet.lastCareDate,
+      currentLesson: pet.currentLesson, solvedDays: pet.solvedDays, giftsOpened: pet.giftsOpened
+    };
+    return CODE_PREFIX + btoa(unescape(encodeURIComponent(JSON.stringify(subset))));
+  }
+  function applySaveCode(raw) {
+    var code = (raw || "").trim();
+    if (code.indexOf(CODE_PREFIX) !== 0) return false;
+    var data;
+    try {
+      data = JSON.parse(decodeURIComponent(escape(atob(code.slice(CODE_PREFIX.length)))));
+    } catch (e) { return false; }
+    if (!data || !data.name || !data.birth) return false;
+    pet = Object.assign({}, DEFAULT_PET, {
+      adopted: true,
+      name: String(data.name).slice(0, 18),
+      birth: data.birth,
+      lastVisit: todayStr(),
+      lastCareDate: data.lastCareDate || data.birth,
+      currentLesson: data.currentLesson || "l1a",
+      solvedDays: Array.isArray(data.solvedDays) ? data.solvedDays : [],
+      giftsOpened: Array.isArray(data.giftsOpened) ? data.giftsOpened : [],
+      solvedToday: []
+    });
+    savePet();
+    return true;
+  }
+
+  document.getElementById("btn-show-import").addEventListener("click", function () {
+    var box = document.getElementById("import-box");
+    box.hidden = !box.hidden;
+  });
+  document.getElementById("btn-import-code").addEventListener("click", function () {
+    if (applySaveCode(document.getElementById("import-code").value)) {
+      applyGate(); renderPet();
+      toast("Panda wiederhergestellt! 🐼");
+    } else {
+      toast("Code ungültig – bitte nochmal prüfen.");
+    }
+  });
+  document.getElementById("btn-show-code").addEventListener("click", function () {
+    var box = document.getElementById("code-box");
+    var field = document.getElementById("save-code");
+    box.hidden = !box.hidden;
+    if (!box.hidden) { field.value = buildSaveCode(); field.select(); }
+  });
+
+  // ---------------------------------------------------------------------
+  // TESTVORSCHAU — nur mit ?test=1 in der Adresse, für die Lehrerin.
+  // ---------------------------------------------------------------------
+  function shiftBirthBackOneDay() {
+    var d = new Date(pet.birth + "T00:00:00");
+    d.setDate(d.getDate() - 1);
+    pet.birth = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+  if (location.search.indexOf("test=1") !== -1) {
+    el.testPanel.hidden = false;
+    document.getElementById("btn-test-day").addEventListener("click", function () {
+      if (!pet.adopted) { toast("Erst einen Panda adoptieren."); return; }
+      pet.solvedDays.push("sim-" + Date.now() + "-" + pet.solvedDays.length);
+      pet.lastCareDate = todayStr();
+      shiftBirthBackOneDay();
+      savePet();
+      renderPet();
+      reactPanda("happy", 1200);
+      toast("Tag simuliert – 🥟 " + dumplingCount() + " / " + GOAL_DAYS);
+    });
+    document.getElementById("btn-test-reset").addEventListener("click", function () {
+      try { localStorage.removeItem(PET_KEY); } catch (e) {}
+      location.reload();
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // INIT
+  // ---------------------------------------------------------------------
+  applyGate();
+  renderPet();
+  if (!reduceMotion) scheduleIdleTic();
+  if (pet.adopted && pet.giftsOpened.indexOf(21) !== -1) {
+    setTimeout(function () { reactPanda("kungfu", 1800); }, 900);
+  }
+  setInterval(renderPet, 2 * 60 * 1000);
+})();
+</script>

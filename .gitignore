@@ -1,0 +1,5 @@
+# grosse Originalbilder, nicht fuer die Website noetig
+bilder/
+
+# lokale Verknuepfung, zeigt auf die eigene Festplatte
+TESTVORSCHAU.url
