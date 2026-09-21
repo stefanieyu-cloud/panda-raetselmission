@@ -3,6 +3,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <style>
   :root {
     --paper: #EEF1E9; --paper-raised: #FFFFFF; --ink: #1B211C; --ink-soft: #565F55;
@@ -111,6 +114,33 @@
   .status-card .p-status { margin-top: 10px; font-size: 17px; font-weight: 700; }
   .dumpling-row { text-align: center; margin-top: 14px; font-size: 15px; font-weight: 700; color: var(--gold); }
 
+  .auth-form { display: flex; flex-direction: column; gap: 10px; max-width: 320px; margin: 0 auto; }
+  .auth-form input {
+    font: inherit; font-size: 15px; border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 12px; background: var(--paper); color: var(--ink); text-align: center;
+  }
+  .auth-btns { display: flex; gap: 8px; }
+  .auth-btns button { flex: 1; }
+  .auth-note { font-size: 11.5px; color: var(--ink-soft); text-align: center; max-width: 340px; margin: 10px auto 0; line-height: 1.5; }
+  .auth-status { text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 10px; }
+  .offline-hint {
+    border: 1.5px solid var(--gold); border-radius: 12px; padding: 10px 12px; margin-top: 12px;
+    font-size: 12px; color: var(--ink-soft); text-align: center; line-height: 1.5;
+    background: color-mix(in srgb, var(--gold) 8%, var(--paper-raised));
+  }
+
+  .lb-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .lb-row {
+    display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+    border: 1px solid var(--line); border-radius: 10px; font-size: 13.5px;
+  }
+  .lb-row.me { border-color: var(--jade); background: color-mix(in srgb, var(--jade) 9%, var(--paper-raised)); font-weight: 700; }
+  .lb-rank { width: 28px; font-weight: 800; color: var(--ink-soft); text-align: center; flex-shrink: 0; }
+  .lb-row.top .lb-rank { font-size: 17px; }
+  .lb-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-score { font-weight: 700; color: var(--gold); white-space: nowrap; }
+  .lb-empty { font-size: 13px; color: var(--ink-soft); text-align: center; padding: 10px; }
+
   .pass-heading { text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-soft); margin-top: 18px; font-weight: 700; }
   .gift-row { display: flex; justify-content: center; gap: 14px; margin-top: 8px; flex-wrap: wrap; }
   .gift-chip { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--ink-soft); min-width: 52px; }
@@ -156,17 +186,10 @@
   }
   .map-caption { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
 
-  .save-code-wrap { text-align: center; margin-top: 16px; }
   .btn-link {
     background: none; border: none; color: var(--jade); font: inherit; font-size: 12.5px;
     text-decoration: underline; cursor: pointer; padding: 4px;
   }
-  .save-code-box { margin-top: 10px; }
-  .save-code-box textarea, .save-code-box input {
-    width: 100%; font: 12px monospace; padding: 8px; border: 1px solid var(--line);
-    border-radius: 8px; background: var(--paper); color: var(--ink); resize: vertical;
-  }
-  .save-code-hint { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
 
   .test-panel {
     border: 2px dashed var(--seal); border-radius: 14px; padding: 12px; margin-top: 16px;
@@ -368,7 +391,31 @@
       einen Schritt weiter auf der Karte &ndash; egal welchen Rätseltyp du wählst.</p>
   </header>
 
-  <section class="card" id="view-adopt">
+  <section class="card" id="view-auth" hidden>
+    <img class="adopt-hero-img" src="img/idle.jpg" alt="Ein kleiner Panda sitzt und lächelt" />
+    <h2 class="section-title" style="text-align:center;">Anmelden</h2>
+    <p class="section-sub" style="text-align:center;">Mit Spitzname und Passwort. Damit findest du
+      deinen Panda auf jedem Gerät wieder und kommst in die Bestenliste.</p>
+    <div class="auth-form">
+      <input type="text" id="auth-name" maxlength="20" autocomplete="username" placeholder="Spitzname" />
+      <input type="password" id="auth-pw" maxlength="60" autocomplete="current-password" placeholder="Passwort (mind. 6 Zeichen)" />
+      <div class="auth-btns">
+        <button class="btn-primary" id="btn-login">Anmelden</button>
+        <button class="btn-ghost" id="btn-register">Neu registrieren</button>
+      </div>
+    </div>
+    <p class="auth-status" id="auth-status"></p>
+    <p class="auth-note">Nimm bitte <strong>nicht</strong> deinen echten vollen Namen und
+      <strong>nicht</strong> dein Passwort von E-Mail oder Social Media. Ein Spitzname und ein neues,
+      einfaches Passwort reichen völlig. Gespeichert werden nur Spitzname und Lernfortschritt.</p>
+    <div class="offline-hint" id="offline-hint" hidden>
+      Keine Verbindung zum Anmeldedienst. Du kannst trotzdem üben &ndash; dein Panda wird dann nur
+      auf diesem Gerät gespeichert.
+      <div style="margin-top:8px;"><button class="btn-ghost" id="btn-offline">Ohne Anmeldung üben</button></div>
+    </div>
+  </section>
+
+  <section class="card" id="view-adopt" hidden>
     <img class="adopt-hero-img" src="img/idle.jpg" alt="Ein kleiner Panda sitzt und lächelt" />
     <h2 class="section-title" style="text-align:center;">Willkommen! 🐼</h2>
     <p class="section-sub" style="text-align:center;">Wie soll dein Panda heißen? Er wacht gleich auf und reagiert ab jetzt live auf dich.</p>
@@ -376,15 +423,8 @@
       <input type="text" id="adopt-name" maxlength="18" placeholder="Name deines Pandas" />
       <button class="btn-primary" id="btn-adopt">Panda adoptieren</button>
     </div>
-    <p class="storage-note">Dein Panda wird nur auf diesem Gerät und in diesem Browser gespeichert.
-      Wenn du Browserdaten löschst oder das Gerät wechselst, kann dein Panda verloren gehen.</p>
-    <div class="save-code-wrap">
-      <button class="btn-link" id="btn-show-import">Ich habe schon einen Panda-Code</button>
-      <div class="save-code-box" id="import-box" hidden>
-        <input type="text" id="import-code" placeholder="PANDA1-..." />
-        <div style="margin-top:8px;"><button class="btn-primary" id="btn-import-code">Code einlesen</button></div>
-      </div>
-    </div>
+    <p class="storage-note">Dein Fortschritt wird unter deinem Spitznamen gespeichert. Damit findest
+      du deinen Panda auf jedem Gerät wieder, sobald du dich anmeldest.</p>
   </section>
 
   <section class="card" id="view-pet" hidden>
@@ -413,14 +453,15 @@
     <p class="pass-heading">🎫 Panda-Pass</p>
     <div class="gift-row" id="gift-row"></div>
 
-    <div class="save-code-wrap">
-      <button class="btn-link" id="btn-show-code">💾 Speichercode anzeigen</button>
-      <div class="save-code-box" id="code-box" hidden>
-        <textarea id="save-code" rows="3" readonly></textarea>
-        <p class="save-code-hint">Schreib dir diesen Code auf. Damit holst du deinen Panda auf ein
-          anderes Gerät oder nach dem Löschen der Browserdaten zurück.</p>
+    <div id="leaderboard-wrap" hidden>
+      <p class="pass-heading">🏅 Bestenliste</p>
+      <div class="lb-list" id="lb-list"></div>
+      <div style="text-align:center;margin-top:10px;">
+        <button class="btn-link" id="btn-lb-refresh">Aktualisieren</button>
+        <button class="btn-link" id="btn-logout">Abmelden</button>
       </div>
     </div>
+
 
     <div class="test-panel" id="test-panel" hidden>
       <h3>🧪 TESTVORSCHAU</h3>
@@ -745,6 +786,46 @@
     lastCareDate: "", currentLesson: "l1a", solvedToday: [], solvedDays: [], giftsOpened: []
   };
 
+  // ---------------------------------------------------------------------
+  // FIREBASE — Anmeldung mit Spitzname und Passwort, gemeinsame
+  // Bestenliste. Der apiKey ist bei Web-Apps absichtlich öffentlich; der
+  // Schutz kommt aus den Firestore-Regeln (jede:r schreibt nur den
+  // eigenen Datensatz). Fällt Firebase aus, läuft die App lokal weiter.
+  // ---------------------------------------------------------------------
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyB5Sia5l_UYodqtCUztqiQPEjvO3xuSAHw",
+    authDomain: "panda-raetselmission.firebaseapp.com",
+    projectId: "panda-raetselmission",
+    storageBucket: "panda-raetselmission.firebasestorage.app",
+    messagingSenderId: "549631386001",
+    appId: "1:549631386001:web:23c55d2788d01784a63a30"
+  };
+  var PSEUDO_DOMAIN = "@panda.local"; // keine echten E-Mail-Adressen von Minderjährigen
+  var cloudReady = false, fbAuth = null, fbDb = null, currentUid = null, offlineMode = false;
+
+  try {
+    if (window.firebase && firebase.initializeApp) {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      fbAuth = firebase.auth();
+      fbDb = firebase.firestore();
+      cloudReady = true;
+    }
+  } catch (e) { cloudReady = false; }
+
+  function nickToEmail(nick) {
+    return nick.trim().toLowerCase().replace(/[^a-z0-9]+/g, "") + PSEUDO_DOMAIN;
+  }
+  function authErrorText(code) {
+    if (code === "auth/invalid-credential" || code === "auth/wrong-password" || code === "auth/user-not-found") {
+      return "Spitzname oder Passwort stimmt nicht.";
+    }
+    if (code === "auth/email-already-in-use") return "Diesen Spitznamen gibt es schon – nimm einen anderen oder melde dich an.";
+    if (code === "auth/weak-password") return "Das Passwort braucht mindestens 6 Zeichen.";
+    if (code === "auth/network-request-failed") return "Keine Verbindung. Prüf das WLAN.";
+    if (code === "auth/too-many-requests") return "Zu viele Versuche. Warte kurz und probier es nochmal.";
+    return "Anmeldung nicht möglich (" + code + ").";
+  }
+
   var pet = lsGet(PET_KEY, null);
   if (!pet) {
     var v2 = lsGet(PET_KEY_V2, null);
@@ -770,7 +851,44 @@
   if (!pet.solvedToday) pet.solvedToday = [];
   if (!pet.solvedDays) pet.solvedDays = [];
   if (!pet.giftsOpened) pet.giftsOpened = [];
-  function savePet() { lsSet(PET_KEY, pet); }
+  var cloudPushTimer = null;
+  function savePet() {
+    lsSet(PET_KEY, pet);
+    if (cloudReady && currentUid && pet.adopted) {
+      clearTimeout(cloudPushTimer);
+      cloudPushTimer = setTimeout(pushToCloud, 800); // mehrere Änderungen zu einem Schreibvorgang bündeln
+    }
+  }
+
+  function pushToCloud() {
+    if (!cloudReady || !currentUid) return;
+    fbDb.collection("pandas").doc(currentUid).set({
+      nickname: pet.nickname || "",
+      pandaName: pet.name || "",
+      birth: pet.birth || "",
+      lastCareDate: pet.lastCareDate || "",
+      currentLesson: pet.currentLesson || "l1a",
+      solvedDays: pet.solvedDays || [],
+      giftsOpened: pet.giftsOpened || [],
+      dumplings: (pet.solvedDays || []).length,
+      updatedAt: Date.now()
+    }).catch(function () { /* offline: localStorage bleibt die Wahrheit */ });
+  }
+
+  function petFromCloud(data, nickname) {
+    return Object.assign({}, DEFAULT_PET, {
+      adopted: !!data.birth,
+      nickname: nickname,
+      name: data.pandaName || "",
+      birth: data.birth || "",
+      lastVisit: todayStr(),
+      lastCareDate: data.lastCareDate || data.birth || "",
+      currentLesson: data.currentLesson || "l1a",
+      solvedDays: Array.isArray(data.solvedDays) ? data.solvedDays : [],
+      giftsOpened: Array.isArray(data.giftsOpened) ? data.giftsOpened : [],
+      solvedToday: []
+    });
+  }
 
   function formatDateDE(dateStr) {
     var d = new Date(dateStr + "T00:00:00");
@@ -815,7 +933,10 @@
     heroLessonTitle: document.getElementById("hero-lesson-title"),
     lessonSelect: document.getElementById("lesson-select"),
     toast: document.getElementById("toast"),
-    viewAdopt: document.getElementById("view-adopt"),
+    viewAuth: document.getElementById("view-auth"), viewAdopt: document.getElementById("view-adopt"),
+    authName: document.getElementById("auth-name"), authPw: document.getElementById("auth-pw"),
+    authStatus: document.getElementById("auth-status"), offlineHint: document.getElementById("offline-hint"),
+    leaderboardWrap: document.getElementById("leaderboard-wrap"), lbList: document.getElementById("lb-list"),
     viewPet: document.getElementById("view-pet"), viewHub: document.getElementById("view-hub"),
     viewPuzzle: document.getElementById("view-puzzle"),
     hubGrid: document.getElementById("hub-grid"),
@@ -880,11 +1001,101 @@
   }
   function celebrate() { reactPanda("happy", 1600); }
 
+  function signedIn() { return !!currentUid || offlineMode; }
+
   function applyGate() {
-    el.viewAdopt.hidden = pet.adopted;
-    el.viewPet.hidden = !pet.adopted;
-    el.viewHub.hidden = !pet.adopted;
+    var authed = signedIn();
+    el.viewAuth.hidden = authed;
+    el.viewAdopt.hidden = !authed || pet.adopted;
+    el.viewPet.hidden = !authed || !pet.adopted;
+    el.viewHub.hidden = !authed || !pet.adopted;
+    el.leaderboardWrap.hidden = !(currentUid && pet.adopted);
   }
+
+  // ---------------------------------------------------------------------
+  // ANMELDUNG
+  // ---------------------------------------------------------------------
+  function setAuthStatus(msg) { el.authStatus.textContent = msg || ""; }
+
+  function afterSignIn(user, nickname) {
+    currentUid = user.uid;
+    setAuthStatus("");
+    fbDb.collection("pandas").doc(user.uid).get().then(function (snap) {
+      var localHasPanda = pet.adopted && pet.birth;
+      if (snap.exists && snap.data().birth) {
+        pet = petFromCloud(snap.data(), nickname);   // Wolke gewinnt: Fortschritt von anderem Gerät
+        lsSet(PET_KEY, pet);
+      } else {
+        pet.nickname = nickname;                      // erster Login: lokalen Panda hochladen
+        if (localHasPanda) pushToCloud();
+      }
+      applyGate(); renderPet(); loadLeaderboard();
+      toast("Angemeldet als " + nickname + " 🐼");
+    }).catch(function () {
+      pet.nickname = nickname;
+      applyGate(); renderPet();
+      toast("Angemeldet, aber die Bestenliste ist gerade nicht erreichbar.");
+    });
+  }
+
+  function doAuth(mode) {
+    var nick = el.authName.value.trim();
+    var pw = el.authPw.value;
+    if (nick.length < 2) { setAuthStatus("Bitte einen Spitznamen mit mindestens 2 Zeichen."); return; }
+    if (nickToEmail(nick).length <= PSEUDO_DOMAIN.length) { setAuthStatus("Der Spitzname braucht Buchstaben oder Zahlen."); return; }
+    if (pw.length < 6) { setAuthStatus("Das Passwort braucht mindestens 6 Zeichen."); return; }
+    setAuthStatus(mode === "register" ? "Konto wird angelegt…" : "Anmeldung läuft…");
+    var email = nickToEmail(nick);
+    var call = mode === "register"
+      ? fbAuth.createUserWithEmailAndPassword(email, pw)
+      : fbAuth.signInWithEmailAndPassword(email, pw);
+    call.then(function (cred) { afterSignIn(cred.user, nick); })
+      .catch(function (err) { setAuthStatus(authErrorText(err && err.code ? err.code : "unbekannt")); });
+  }
+
+  // ---------------------------------------------------------------------
+  // BESTENLISTE — zeigt nur Spitzname und Fortschritt, keine Klarnamen.
+  // ---------------------------------------------------------------------
+  function loadLeaderboard() {
+    if (!cloudReady || !currentUid) return;
+    el.lbList.innerHTML = '<p class="lb-empty">Wird geladen…</p>';
+    fbDb.collection("pandas").orderBy("dumplings", "desc").limit(25).get().then(function (snap) {
+      var rows = [];
+      snap.forEach(function (doc) {
+        var d = doc.data();
+        if (d.nickname) rows.push({ uid: doc.id, nickname: d.nickname, dumplings: d.dumplings || 0 });
+      });
+      el.lbList.innerHTML = "";
+      if (!rows.length) { el.lbList.innerHTML = '<p class="lb-empty">Noch niemand dabei. Sei die oder der Erste!</p>'; return; }
+      rows.forEach(function (r, i) {
+        var row = document.createElement("div");
+        row.className = "lb-row" + (r.uid === currentUid ? " me" : "") + (i < 3 ? " top" : "");
+        var medal = i === 0 ? "🥇" : (i === 1 ? "🥈" : (i === 2 ? "🥉" : String(i + 1)));
+        row.innerHTML = '<span class="lb-rank">' + medal + '</span>'
+          + '<span class="lb-name"></span>'
+          + '<span class="lb-score">🥟 ' + r.dumplings + '</span>';
+        row.querySelector(".lb-name").textContent = r.nickname; // als Text, nie als HTML
+        el.lbList.appendChild(row);
+      });
+    }).catch(function () {
+      el.lbList.innerHTML = '<p class="lb-empty">Bestenliste gerade nicht erreichbar.</p>';
+    });
+  }
+
+  document.getElementById("btn-login").addEventListener("click", function () { doAuth("login"); });
+  document.getElementById("btn-register").addEventListener("click", function () { doAuth("register"); });
+  el.authPw.addEventListener("keydown", function (ev) { if (ev.key === "Enter") doAuth("login"); });
+  document.getElementById("btn-offline").addEventListener("click", function () {
+    offlineMode = true; applyGate(); renderPet();
+  });
+  document.getElementById("btn-lb-refresh").addEventListener("click", loadLeaderboard);
+  document.getElementById("btn-logout").addEventListener("click", function () {
+    if (fbAuth) fbAuth.signOut();
+    currentUid = null; offlineMode = false;
+    el.authPw.value = "";
+    applyGate();
+    toast("Abgemeldet.");
+  });
   document.getElementById("btn-adopt").addEventListener("click", function () {
     var input = document.getElementById("adopt-name");
     var name = input.value.trim().slice(0, 18);
@@ -1718,59 +1929,6 @@
   }
 
   // ---------------------------------------------------------------------
-  // SPEICHERCODE — Fortschritt als Text mitnehmen, ganz ohne Konto.
-  // ---------------------------------------------------------------------
-  var CODE_PREFIX = "PANDA1-";
-  function buildSaveCode() {
-    var subset = {
-      name: pet.name, birth: pet.birth, lastCareDate: pet.lastCareDate,
-      currentLesson: pet.currentLesson, solvedDays: pet.solvedDays, giftsOpened: pet.giftsOpened
-    };
-    return CODE_PREFIX + btoa(unescape(encodeURIComponent(JSON.stringify(subset))));
-  }
-  function applySaveCode(raw) {
-    var code = (raw || "").trim();
-    if (code.indexOf(CODE_PREFIX) !== 0) return false;
-    var data;
-    try {
-      data = JSON.parse(decodeURIComponent(escape(atob(code.slice(CODE_PREFIX.length)))));
-    } catch (e) { return false; }
-    if (!data || !data.name || !data.birth) return false;
-    pet = Object.assign({}, DEFAULT_PET, {
-      adopted: true,
-      name: String(data.name).slice(0, 18),
-      birth: data.birth,
-      lastVisit: todayStr(),
-      lastCareDate: data.lastCareDate || data.birth,
-      currentLesson: data.currentLesson || "l1a",
-      solvedDays: Array.isArray(data.solvedDays) ? data.solvedDays : [],
-      giftsOpened: Array.isArray(data.giftsOpened) ? data.giftsOpened : [],
-      solvedToday: []
-    });
-    savePet();
-    return true;
-  }
-
-  document.getElementById("btn-show-import").addEventListener("click", function () {
-    var box = document.getElementById("import-box");
-    box.hidden = !box.hidden;
-  });
-  document.getElementById("btn-import-code").addEventListener("click", function () {
-    if (applySaveCode(document.getElementById("import-code").value)) {
-      applyGate(); renderPet();
-      toast("Panda wiederhergestellt! 🐼");
-    } else {
-      toast("Code ungültig – bitte nochmal prüfen.");
-    }
-  });
-  document.getElementById("btn-show-code").addEventListener("click", function () {
-    var box = document.getElementById("code-box");
-    var field = document.getElementById("save-code");
-    box.hidden = !box.hidden;
-    if (!box.hidden) { field.value = buildSaveCode(); field.select(); }
-  });
-
-  // ---------------------------------------------------------------------
   // TESTVORSCHAU — nur mit ?test=1 in der Adresse, für die Lehrerin.
   // ---------------------------------------------------------------------
   function shiftBirthBackOneDay() {
@@ -1810,6 +1968,21 @@
   // ---------------------------------------------------------------------
   // INIT
   // ---------------------------------------------------------------------
+  if (cloudReady) {
+    // Angemeldete Sitzung wiederherstellen, ohne dass jemand neu tippen muss.
+    fbAuth.onAuthStateChanged(function (user) {
+      if (user) {
+        var nick = (user.email || "").split("@")[0];
+        afterSignIn(user, pet.nickname || nick);
+      } else {
+        currentUid = null;
+        applyGate();
+      }
+    });
+  } else {
+    el.offlineHint.hidden = false; // Firebase nicht erreichbar: lokal weiterspielen anbieten
+  }
+
   applyGate();
   renderPet();
   if (!reduceMotion) scheduleIdleTic();
