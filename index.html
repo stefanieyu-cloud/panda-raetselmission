@@ -143,6 +143,41 @@
     100% { transform: translateY(0) rotate(0deg) scale(1); }
   }
 
+  /* Nachtruhe: gedämpftes Licht, ruhigeres Atmen, Schlaf-Zeichen */
+  .stage.asleep .pet-img { filter: brightness(0.72) saturate(0.7); }
+  .stage.asleep::after {
+    content: "💤"; position: absolute; top: 4px; right: 18%; font-size: 26px; z-index: 7;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .stage.asleep .pet-inner { animation: pet-float 7s ease-in-out infinite; }
+    .stage.asleep .pet-img { animation: pet-breathe 5.2s ease-in-out infinite; }
+    .stage.asleep::after { animation: zzz-drift 3s ease-in-out infinite; }
+  }
+  @keyframes zzz-drift {
+    0%, 100% { transform: translateY(0) scale(1); opacity: .55; }
+    50%      { transform: translateY(-9px) scale(1.12); opacity: 1; }
+  }
+
+  .poop { position: absolute; bottom: 2px; font-size: 26px; pointer-events: none; z-index: 7; }
+  .poop.p0 { left: 6%; } .poop.p1 { left: 46%; } .poop.p2 { right: 6%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .poop { animation: poop-in .4s ease-out 1; }
+  }
+  @keyframes poop-in { 0% { transform: scale(0) translateY(10px); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+  .care-card { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .care-bars { display: flex; flex-direction: column; gap: 8px; }
+  .care-row { display: flex; align-items: center; gap: 10px; font-size: 12.5px; }
+  .care-row .care-label { width: 96px; flex-shrink: 0; color: var(--ink-soft); }
+  .care-bar { flex: 1; height: 10px; border-radius: 6px; background: var(--chip-bg); overflow: hidden; }
+  .care-bar > span { display: block; height: 100%; border-radius: 6px; transition: width .35s ease; }
+  .care-bar.hunger > span { background: var(--jade); }
+  .care-bar.health > span { background: var(--seal); }
+  .care-val { width: 42px; text-align: right; font-weight: 700; color: var(--ink-soft); flex-shrink: 0; }
+  .care-btns { display: flex; gap: 8px; margin-top: 12px; }
+  .care-btns button { flex: 1; }
+  .care-hint { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
+
   .status-card { text-align: center; margin-top: 8px; }
   .status-card .p-name { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 21px; margin: 4px 0 6px; }
   .status-card .p-line { font-size: 13.5px; color: var(--ink-soft); margin: 2px 0; }
@@ -190,7 +225,15 @@
     box-shadow: var(--shadow); line-height: 0;
   }
   .journey-bg { display: block; width: 100%; height: auto; }
+  /* Schleier: die gemalten Zahlen im Bild sind fehlerhaft (11, 16 und 25
+     doppelt, 12 fehlt). Sie treten zurück, der echte Weg liegt darüber. */
+  .journey-veil { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.42); pointer-events: none; }
+  .journey-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .journey-dots { position: absolute; inset: 0; line-height: 1; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .journey-veil { background: rgba(20, 24, 20, 0.45); }
+  }
+  :root[data-theme="dark"] .journey-veil { background: rgba(20, 24, 20, 0.45); }
   .mk {
     position: absolute; transform: translate(-50%, -50%);
     width: 7.4%; aspect-ratio: 1; border-radius: 50%;
@@ -428,9 +471,10 @@
 
   <section class="card" id="view-auth" hidden>
     <img class="adopt-hero-img" src="img/idle.jpg" alt="Ein kleiner Panda sitzt und lächelt" />
-    <h2 class="section-title" style="text-align:center;">Anmelden</h2>
-    <p class="section-sub" style="text-align:center;">Mit Spitzname und Passwort. Damit findest du
-      deinen Panda auf jedem Gerät wieder und kommst in die Bestenliste.</p>
+    <h2 class="section-title" style="text-align:center;">Willkommen bei der Panda-Rätselmission</h2>
+    <p class="section-sub" style="text-align:center;">Melde dich mit deinem Spitznamen an. Beim
+      ersten Mal wählst du <strong>Neu registrieren</strong>, danach immer <strong>Anmelden</strong>.
+      So findest du deinen Panda auf jedem Gerät wieder und erscheinst in der Bestenliste.</p>
     <div class="auth-form">
       <input type="text" id="auth-name" maxlength="20" autocomplete="username" placeholder="Spitzname" />
       <input type="password" id="auth-pw" maxlength="60" autocomplete="current-password" placeholder="Passwort (mind. 6 Zeichen)" />
@@ -452,14 +496,16 @@
 
   <section class="card" id="view-adopt" hidden>
     <img class="adopt-hero-img" src="img/idle.jpg" alt="Ein kleiner Panda sitzt und lächelt" />
-    <h2 class="section-title" style="text-align:center;">Willkommen! 🐼</h2>
-    <p class="section-sub" style="text-align:center;">Wie soll dein Panda heißen? Er wacht gleich auf und reagiert ab jetzt live auf dich.</p>
+    <h2 class="section-title" style="text-align:center;">Dein Panda zieht ein! 🐼</h2>
+    <p class="section-sub" style="text-align:center;">Jetzt bekommt er noch einen Namen. Der ist
+      etwas anderes als dein Spitzname: Du heißt <span id="adopt-nick"></span>, dein Panda darf
+      heißen, wie du möchtest.</p>
     <div class="adopt-form">
       <input type="text" id="adopt-name" maxlength="18" placeholder="Name deines Pandas" />
       <button class="btn-primary" id="btn-adopt">Panda adoptieren</button>
     </div>
-    <p class="storage-note">Dein Fortschritt wird unter deinem Spitznamen gespeichert. Damit findest
-      du deinen Panda auf jedem Gerät wieder, sobald du dich anmeldest.</p>
+    <p class="storage-note">Ab jetzt läuft eure gemeinsame Reise: 30 Tage, jeden Tag ein Rätsel,
+      und dein Panda wandert Feld für Feld über die Karte.</p>
   </section>
 
   <section class="card" id="view-pet" hidden>
@@ -479,8 +525,35 @@
       <p class="dumpling-row" id="dumpling-row"></p>
     </div>
 
+    <div class="care-card">
+      <div class="care-bars">
+        <div class="care-row">
+          <span class="care-label">🎋 Sattheit</span>
+          <span class="care-bar hunger"><span id="bar-hunger"></span></span>
+          <span class="care-val" id="val-hunger"></span>
+        </div>
+        <div class="care-row">
+          <span class="care-label">❤️ Gesundheit</span>
+          <span class="care-bar health"><span id="bar-health"></span></span>
+          <span class="care-val" id="val-health"></span>
+        </div>
+      </div>
+      <div class="care-btns">
+        <button class="btn-primary" id="btn-feed">🎋 Füttern</button>
+        <button class="btn-ghost" id="btn-play">🎾 Spielen</button>
+        <button class="btn-ghost" id="btn-clean">🧹 Saubermachen</button>
+      </div>
+      <p class="care-hint" id="care-hint"></p>
+    </div>
+
     <div class="journey-map" id="map-wrap">
       <img class="journey-bg" src="img/map.jpg" alt="Panda-Reisekarte mit 30 Feldern" />
+      <div class="journey-veil"></div>
+      <svg class="journey-line" id="map-line" viewBox="0 0 1000 1250" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <polyline id="path-base" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"></polyline>
+        <polyline id="path-base2" fill="none" stroke="#b9a06a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 22" opacity="0.9"></polyline>
+        <polyline id="path-done" fill="none" stroke="#C8A02E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      </svg>
       <div class="journey-dots" id="map-dots"></div>
     </div>
     <p class="map-caption" id="map-caption"></p>
@@ -510,7 +583,7 @@
 
   <section class="card" id="view-hub" hidden>
     <h2 class="section-title">Heutiges Rätsel wählen</h2>
-    <p class="section-sub" id="hub-sub">Jedes gelöste Rätsel bringt deinen Panda heute einen Schritt weiter.</p>
+    <p class="section-sub" id="hub-sub">Ein gelöstes Rätsel pro Tag bringt deinen Panda ein Feld weiter. Weitere Rätsel am selben Tag sind freiwillige Übung.</p>
     <div class="puzzle-grid" id="hub-grid"></div>
     <p class="today-count" id="today-count"></p>
   </section>
@@ -791,13 +864,14 @@
   // Mit ?calib=1 lassen sich die Werte im Browser nachjustieren.
   // ---------------------------------------------------------------------
   var MAP_POINTS = [
-    [18.4, 18.0], [29.1, 18.7], [38.3, 20.5], [47.6, 21.9], [57.9, 21.6],
-    [68.2, 20.6], [79.3, 22.8], [87.2, 25.7], [91.1, 30.0], [90.2, 35.1],
-    [83.8, 39.1], [73.8, 40.8], [29.4, 43.3], [18.9, 44.6], [11.6, 48.9],
-    [14.3, 54.4], [37.4, 46.7], [44.3, 50.4], [52.9, 52.9], [61.5, 54.6],
-    [78.2, 64.2], [88.7, 64.6], [92.2, 69.5], [82.4, 74.9], [72.9, 76.0],
-    [62.4, 76.9], [52.1, 78.5], [45.6, 82.9], [46.3, 88.4], [78.0, 94.5]
+    [18.0, 18.0], [29.0, 19.0], [38.5, 20.5], [48.0, 22.0], [58.0, 21.5],
+    [68.0, 20.5], [79.3, 22.8], [88.0, 26.0], [91.0, 30.2], [90.0, 35.2],
+    [84.0, 39.2], [74.0, 41.0], [58.0, 43.0], [40.0, 44.3], [24.0, 46.5],
+    [13.5, 51.0], [19.0, 56.5], [32.0, 58.0], [44.0, 59.5], [60.0, 61.5],
+    [78.2, 64.2], [89.0, 65.5], [92.0, 70.0], [82.0, 75.0], [72.0, 76.2],
+    [62.0, 77.2], [52.0, 78.6], [46.0, 83.0], [59.0, 88.5], [78.0, 94.5]
   ];
+  var MAP_W = 1000, MAP_H = 1250; // Bildmaße, dienen als Koordinatensystem der Weglinie
 
   // ---------------------------------------------------------------------
   // PANDA-BILDZUSTÄNDE — dieselbe Figur in acht Posen, als relative
@@ -818,8 +892,63 @@
 
   var DEFAULT_PET = {
     adopted: false, name: "", birth: "", lastVisit: "",
-    lastCareDate: "", currentLesson: "l1a", solvedToday: [], solvedDays: [], giftsOpened: []
+    lastCareDate: "", currentLesson: "l1a", solvedToday: [], solvedDays: [], giftsOpened: [],
+    hunger: 100, health: 100, poops: 0, lastTick: 0, wokenAt: 0
   };
+
+  // ---------------------------------------------------------------------
+  // PFLEGE — läuft über echte Zeit in einem 24-Stunden-Rhythmus.
+  // Satt werden zu leer in 24 h, alle 9 h ein Häufchen. Bewusst
+  // nachsichtig: Die Gesundheit fällt nie unter 20, der Panda kann nicht
+  // sterben, und es werden höchstens 48 h Rückstand nachgerechnet. Wer
+  // eine Woche fehlt, findet also keinen ruinierten Panda vor.
+  // ---------------------------------------------------------------------
+  var HUNGER_PER_H = 100 / 24;
+  var POOP_EVERY_H = 9;
+  var MAX_POOPS = 3;
+  var MAX_CATCHUP_H = 48;
+  var HEALTH_FLOOR = 20;
+
+  function applyCareTick() {
+    if (!pet.adopted) return;
+    var now = Date.now();
+    if (!pet.lastTick) { pet.lastTick = now; return; }
+    var hours = (now - pet.lastTick) / 3600000;
+    if (hours < 0.02) return;              // unter gut einer Minute lohnt sich nichts
+    hours = Math.min(hours, MAX_CATCHUP_H);
+
+    pet.hunger = clamp(pet.hunger - hours * HUNGER_PER_H, 0, 100);
+    pet.poops = Math.min(MAX_POOPS, pet.poops + Math.floor(hours / POOP_EVERY_H));
+
+    var loss = 0;
+    if (pet.hunger <= 0) loss += hours * 1.5;      // Hunger tut weh
+    if (pet.poops >= 2) loss += hours * 1.0;       // Unordnung auch
+    var gain = (pet.hunger > 30 && pet.poops === 0) ? hours * 1.5 : 0;
+    pet.health = clamp(pet.health - loss + gain, HEALTH_FLOOR, 100);
+
+    pet.lastTick = now;
+    savePet();
+  }
+
+  function feedPanda() {
+    if (pet.hunger >= 98) { toast(pet.name + " ist schon pappsatt. 🎋"); return; }
+    pet.hunger = clamp(pet.hunger + 45, 0, 100);
+    pet.health = clamp(pet.health + 6, HEALTH_FLOOR, 100);
+    savePet();
+    reactPanda("eating", 2000);
+    renderPet();
+    toast("Mahlzeit! 🎋");
+  }
+
+  function cleanPanda() {
+    if (pet.poops <= 0) { toast("Es ist schon alles sauber. ✨"); return; }
+    pet.poops = 0;
+    pet.health = clamp(pet.health + 8, HEALTH_FLOOR, 100);
+    savePet();
+    renderPet();
+    hop();
+    toast("Sauber gemacht! ✨");
+  }
 
   // ---------------------------------------------------------------------
   // FIREBASE — Anmeldung mit Spitzname und Passwort, gemeinsame
@@ -906,6 +1035,8 @@
       solvedDays: pet.solvedDays || [],
       giftsOpened: pet.giftsOpened || [],
       dumplings: (pet.solvedDays || []).length,
+      hunger: Math.round(pet.hunger), health: Math.round(pet.health),
+      poops: pet.poops || 0, lastTick: pet.lastTick || Date.now(),
       updatedAt: Date.now()
     }).catch(function () { /* offline: localStorage bleibt die Wahrheit */ });
   }
@@ -921,7 +1052,11 @@
       currentLesson: data.currentLesson || "l1a",
       solvedDays: Array.isArray(data.solvedDays) ? data.solvedDays : [],
       giftsOpened: Array.isArray(data.giftsOpened) ? data.giftsOpened : [],
-      solvedToday: []
+      solvedToday: [],
+      hunger: typeof data.hunger === "number" ? data.hunger : 100,
+      health: typeof data.health === "number" ? data.health : 100,
+      poops: typeof data.poops === "number" ? data.poops : 0,
+      lastTick: typeof data.lastTick === "number" ? data.lastTick : Date.now()
     });
   }
 
@@ -929,10 +1064,14 @@
     var d = new Date(dateStr + "T00:00:00");
     return d.toLocaleDateString("de-AT");
   }
+  // Nachtruhe nach lokaler Uhrzeit des Geräts.
   function isNightTime() {
     var h = new Date().getHours();
-    return h >= 22 || h < 7;
+    return h >= 21 || h < 7;
   }
+  var GRUMPY_MS = 4 * 60 * 1000; // so lange ist er nach dem Wecken verstimmt
+  function isGrumpy() { return pet.wokenAt && (Date.now() - pet.wokenAt) < GRUMPY_MS; }
+  function isAsleep() { return isNightTime() && !isGrumpy(); }
   function ageDays() { return daysBetween(pet.birth, todayStr()) + 1; }
   function daysSinceCare() {
     if (!pet.lastCareDate) return 99;
@@ -971,6 +1110,7 @@
     viewAuth: document.getElementById("view-auth"), viewAdopt: document.getElementById("view-adopt"),
     authName: document.getElementById("auth-name"), authPw: document.getElementById("auth-pw"),
     authStatus: document.getElementById("auth-status"), offlineHint: document.getElementById("offline-hint"),
+    adoptNick: document.getElementById("adopt-nick"),
     leaderboardWrap: document.getElementById("leaderboard-wrap"), lbList: document.getElementById("lb-list"),
     viewPet: document.getElementById("view-pet"), viewHub: document.getElementById("view-hub"),
     viewPuzzle: document.getElementById("view-puzzle"),
@@ -978,11 +1118,16 @@
     todayCount: document.getElementById("today-count"),
     pzTitle: document.getElementById("pz-title"), pzBody: document.getElementById("pz-body"), pzBack: document.getElementById("pz-back"),
     petStage: document.getElementById("pet-stage"), petInner: document.getElementById("pet-inner"),
-    petImg: document.getElementById("pet-img"),
+    petImg: document.getElementById("pet-img"), stageEl: document.querySelector(".stage"),
+    barHunger: document.getElementById("bar-hunger"), barHealth: document.getElementById("bar-health"),
+    valHunger: document.getElementById("val-hunger"), valHealth: document.getElementById("val-health"),
+    careHint: document.getElementById("care-hint"),
     pName: document.getElementById("p-name"), pBorn: document.getElementById("p-born"), pDay: document.getElementById("p-day"),
     pStatusIcon: document.getElementById("p-status-icon"), pStatusLabel: document.getElementById("p-status-label"),
     dumplingRow: document.getElementById("dumpling-row"),
     mapWrap: document.getElementById("map-wrap"), mapDots: document.getElementById("map-dots"),
+    pathBase: document.getElementById("path-base"), pathBase2: document.getElementById("path-base2"),
+    pathDone: document.getElementById("path-done"),
     mapCaption: document.getElementById("map-caption"), giftRow: document.getElementById("gift-row"),
     testPanel: document.getElementById("test-panel")
   };
@@ -997,6 +1142,11 @@
   var petReactionTimer = null;
 
   function resolvePandaState() {
+    if (isAsleep()) return "idle";                 // nachts schlafen, Optik macht das CSS
+    if (isGrumpy()) return "sad";                  // frisch geweckt und verstimmt
+    // Pflege geht vor: Häufchen und Hunger sieht man dem Panda sofort an.
+    if (pet.poops >= 2 || pet.health <= 40) return "sad";
+    if (pet.hunger < 25) return "hungry";
     if (dumplingCount() >= GOAL_DAYS) return "badge"; // nach dem Ziel bleibt der Panda stolz
     var label = statusOf().label;
     if (label === "glücklich") return "happy";
@@ -1055,17 +1205,70 @@
     }, 1800);
   }
 
-  // Antippen oder anklicken: Hopser mit Drehung, dazu ein kurzes Lächeln.
+  // Antippen: tagsüber freut er sich, nachts wird er unsanft geweckt.
   var petPokeTimer = null;
   el.petImg.addEventListener("click", function () {
+    if (isAsleep()) {
+      pet.wokenAt = Date.now();
+      savePet();
+      nod();
+      renderPet();
+      toast("Du hast " + pet.name + " geweckt … 😾");
+      return;
+    }
     hop();
     if (petReactionActive) return;     // laufende Reaktion nicht stören
-    setPandaImage("happy");
+    setPandaImage(isGrumpy() ? "sad" : "happy");
     clearTimeout(petPokeTimer);
     petPokeTimer = setTimeout(function () {
       if (!petReactionActive) setPandaImage(resolvePandaState());
     }, 900);
   });
+
+  function playWithPanda() {
+    if (isAsleep()) { toast(pet.name + " schläft gerade. 💤"); return; }
+    pet.wokenAt = 0;                                  // Spielen vertreibt die schlechte Laune
+    pet.health = clamp(pet.health + 5, HEALTH_FLOOR, 100);
+    pet.hunger = clamp(pet.hunger - 4, 0, 100);       // Toben macht hungrig
+    savePet();
+    reactPanda("playing", 2200);
+    renderPet();
+    toast("Das hat Spaß gemacht! 🎋");
+  }
+
+  function renderCare() {
+    var hunger = Math.round(pet.hunger), health = Math.round(pet.health);
+    el.barHunger.style.width = hunger + "%";
+    el.barHealth.style.width = health + "%";
+    el.valHunger.textContent = hunger + "%";
+    el.valHealth.textContent = health + " HP";
+
+    // Häufchen neben dem Panda anzeigen
+    el.stageEl.querySelectorAll(".poop").forEach(function (n) { n.remove(); });
+    for (var i = 0; i < pet.poops; i++) {
+      var p = document.createElement("span");
+      p.className = "poop p" + i;
+      p.textContent = "💩";
+      p.title = "Bitte saubermachen";
+      el.stageEl.appendChild(p);
+    }
+
+    el.stageEl.classList.toggle("asleep", isAsleep());
+
+    var hint;
+    if (isAsleep()) hint = pet.name + " schläft (21 bis 7 Uhr). Antippen weckt ihn – aber dann ist er mürrisch.";
+    else if (isGrumpy()) hint = "Frisch geweckt und müde. Eine Runde Spielen bringt die Laune zurück.";
+    else if (pet.poops > 0) hint = pet.name + " hat ein Häufchen gemacht – bitte saubermachen.";
+    else if (hunger <= 0) hint = pet.name + " hat großen Hunger!";
+    else if (hunger < 30) hint = pet.name + " wird langsam hungrig.";
+    else if (health < 60) hint = pet.name + " erholt sich gerade wieder.";
+    else hint = "Alles bestens. Sattheit sinkt über 24 Stunden, alle 9 Stunden fällt ein Häufchen an.";
+    el.careHint.textContent = hint;
+  }
+
+  document.getElementById("btn-feed").addEventListener("click", feedPanda);
+  document.getElementById("btn-clean").addEventListener("click", cleanPanda);
+  document.getElementById("btn-play").addEventListener("click", playWithPanda);
 
   function signedIn() { return !!currentUid || offlineMode; }
 
@@ -1073,6 +1276,7 @@
     var authed = signedIn();
     el.viewAuth.hidden = authed;
     el.viewAdopt.hidden = !authed || pet.adopted;
+    if (!el.viewAdopt.hidden) el.adoptNick.textContent = pet.nickname || "du";
     el.viewPet.hidden = !authed || !pet.adopted;
     el.viewHub.hidden = !authed || !pet.adopted;
     el.leaderboardWrap.hidden = !(currentUid && pet.adopted);
@@ -1171,6 +1375,7 @@
     pet.lastVisit = todayStr();
     pet.lastCareDate = todayStr();
     pet.adopted = true;
+    pet.hunger = 100; pet.health = 100; pet.poops = 0; pet.lastTick = Date.now();
     savePet();
     applyGate();
     renderPet();
@@ -1221,6 +1426,15 @@
 
   function renderMap(dCount) {
     var here = clamp(dCount, 1, GOAL_DAYS);
+
+    // Weglinie: heller Grundweg über alle Felder, goldener Teil bis zum
+    // aktuellen Feld – so ist der Fortschritt in einer Linie ablesbar.
+    var toPx = function (p) { return (p[0] / 100 * MAP_W).toFixed(1) + "," + (p[1] / 100 * MAP_H).toFixed(1); };
+    var allPts = MAP_POINTS.map(toPx).join(" ");
+    el.pathBase.setAttribute("points", allPts);
+    el.pathBase2.setAttribute("points", allPts);
+    el.pathDone.setAttribute("points", MAP_POINTS.slice(0, Math.max(1, Math.min(dCount, GOAL_DAYS))).map(toPx).join(" "));
+
     el.mapDots.innerHTML = "";
     MAP_POINTS.forEach(function (pt, i) {
       var n = i + 1;
@@ -1302,6 +1516,7 @@
 
   function renderPet() {
     if (!pet.adopted) return;
+    applyCareTick();
     var today = todayStr();
     if (pet.lastVisit !== today) { pet.solvedToday = []; pet.lastVisit = today; savePet(); }
 
@@ -1310,19 +1525,31 @@
     el.heroLessonTitle.textContent = singleSub ? (singleSub.title || "") : "";
     renderLessonSelect();
 
-    var days = ageDays();
     var dCount = dumplingCount();
     el.pName.textContent = pet.name;
     el.pBorn.textContent = "Geboren am: " + formatDateDE(pet.birth);
-    el.pDay.textContent = "Tag " + Math.min(days, GOAL_DAYS) + " von " + GOAL_DAYS;
+    // Eine einzige Fortschrittszahl: der Tag ist das Feld auf der Karte.
+    // Kalendertage wären ein zweiter, widersprüchlicher Zähler.
+    el.pDay.textContent = "Tag " + clamp(dCount, 1, GOAL_DAYS) + " von " + GOAL_DAYS;
 
     var status = statusOf();
     el.pStatusIcon.textContent = status.icon;
     el.pStatusLabel.textContent = status.label;
-    el.dumplingRow.textContent = "🥟 " + dCount + " / " + GOAL_DAYS + " gesammelt";
+
+    var nextGift = GIFT_MILESTONES.filter(function (m) { return m.count > dCount; })[0];
+    if (dCount >= GOAL_DAYS) {
+      el.dumplingRow.textContent = "🥟 " + dCount + " Dumplings – alle 30 Tage geschafft! 🏅";
+    } else if (nextGift) {
+      var missing = nextGift.count - dCount;
+      el.dumplingRow.textContent = "🥟 " + dCount + " gesammelt · noch "
+        + missing + (missing === 1 ? " Tag" : " Tage") + " bis zur nächsten Überraschung 🎁";
+    } else {
+      el.dumplingRow.textContent = "🥟 " + dCount + " gesammelt";
+    }
 
     el.petStage.dataset.stage = growthStageOf(dCount);
     if (!petReactionActive) setPandaImage(resolvePandaState());
+    renderCare();
 
     renderMap(dCount);
     renderGifts(dCount);
@@ -1420,9 +1647,11 @@
       savePet();
     }
     celebrate();
-    var line = already
-      ? "Heute in diesem Bereich schon einmal gelöst, aber gut geübt!"
-      : (newDay ? "Dein Panda ist heute einen Schritt weiter gewandert! 🥟" : "Dein Panda freut sich über deinen Fleiß.");
+    var line = newDay
+      ? ("Dein Panda ist ein Feld weitergewandert – jetzt auf Feld " + dumplingCount() + " von " + GOAL_DAYS + ". 🥟")
+      : (already
+        ? "Diesen Rätseltyp hast du heute schon geschafft. Üben lohnt sich trotzdem!"
+        : "Für heute steht dein Panda schon auf seinem Feld. Das war zusätzliche Übung.");
     var box = document.createElement("div");
     box.className = "result-box";
     box.innerHTML = '<p class="big">Richtig gelöst!</p>' +
@@ -1998,11 +2227,6 @@
   // ---------------------------------------------------------------------
   // TESTVORSCHAU — nur mit ?test=1 in der Adresse, für die Lehrerin.
   // ---------------------------------------------------------------------
-  function shiftBirthBackOneDay() {
-    var d = new Date(pet.birth + "T00:00:00");
-    d.setDate(d.getDate() - 1);
-    pet.birth = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
-  }
   // Kalibrierhilfe: mit ?calib=1 zeigt ein Klick auf die Karte die Prozentwerte.
   if (location.search.indexOf("calib=1") !== -1) {
     el.mapWrap.addEventListener("click", function (ev) {
@@ -2020,7 +2244,6 @@
       if (!pet.adopted) { toast("Erst einen Panda adoptieren."); return; }
       pet.solvedDays.push("sim-" + Date.now() + "-" + pet.solvedDays.length);
       pet.lastCareDate = todayStr();
-      shiftBirthBackOneDay();
       savePet();
       renderPet();
       reactPanda("happy", 1200);
