@@ -1,4 +1,7 @@
-﻿<title>Panda Rätselmission</title>
+﻿<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#EEF1E9" />
+<title>Panda Rätselmission</title>
 <meta name="description" content="Eine 30-Tage-Panda-Reise fürs Chinesisch-Lernen: kleine Rätsel lösen, Dumpling-Stempel sammeln, Überraschungsgeschenke freischalten und den Panda über eine bunte Karte begleiten. Nur lokal im Browser gespeichert." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -454,6 +457,60 @@
   .result-box p { font-size: 13.5px; color: var(--ink-soft); margin-top: 6px; }
 
   footer.foot { text-align: center; font-size: 12px; color: var(--ink-soft); padding-top: 4px; }
+
+  /* ---------------------------------------------------------------
+     Handy-Ansicht: groessere Tippflaechen, nichts laeuft ueber den
+     Rand, Knoepfe brechen statt sich zu quetschen.
+     --------------------------------------------------------------- */
+  @media (max-width: 560px) {
+    body { padding-inline: 10px; padding-block: 16px 32px; }
+    .wrap { gap: 14px; }
+    section.card { padding: 15px 13px; border-radius: 15px; }
+    header.hero { padding: 18px 14px 14px; }
+    .hero-watermark { font-size: 100px; top: -14px; }
+
+    /* Karte: groessere Felder, damit man sie mit dem Finger trifft */
+    .mk { width: 9.4%; font-size: 11px; border-width: 2px; }
+    .mk-panda { width: 17%; }
+    .map-caption { font-size: 12px; }
+
+    /* Pflegebereich untereinander statt nebeneinander */
+    .care-row { flex-wrap: wrap; gap: 6px; }
+    .care-row .care-label { width: auto; min-width: 104px; }
+    .care-bar { min-width: 120px; }
+    .care-btns { flex-wrap: wrap; }
+    .care-btns button { flex: 1 1 46%; min-height: 44px; padding: 10px 6px; }
+
+    /* Raetselauswahl: zwei statt drei Spalten, dadurch lesbare Namen */
+    .puzzle-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .puzzle-btn { padding: 12px 6px 9px; }
+    .puzzle-btn .de-tag { font-size: 11.5px; }
+
+    /* Anmeldung und Eingaben angenehm gross */
+    .auth-form input, .adopt-form input { font-size: 16px; padding: 12px; } /* 16px verhindert Zoom beim Tippen */
+    .auth-btns { flex-wrap: wrap; }
+    .auth-btns button { flex: 1 1 100%; min-height: 44px; }
+    .btn-primary, .btn-ghost { min-height: 44px; }
+
+    .pet-stage { width: 170px; height: 170px; }
+    .gift-row { gap: 10px; }
+    .gift-chip { min-width: 46px; font-size: 10.5px; }
+    .lb-row { padding: 9px 10px; font-size: 13px; }
+
+    /* Raetselinhalte, die sonst seitlich hinauslaufen */
+    .coord-cell { width: 48px; height: 44px; font-size: 16px; }
+    .rad-wrap { width: 190px; height: 190px; }
+    .rad-item { width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; font-size: 12.5px; }
+    .match-grid, .triplet-grid { gap: 6px; }
+    .match-chip { padding: 11px 4px; font-size: 13px; }
+    .slot-btn { min-width: 52px; padding: 9px 10px; }
+  }
+
+  @media (max-width: 380px) {
+    .mk { width: 10.5%; font-size: 10px; }
+    .care-btns button { flex: 1 1 100%; }
+    .coord-cell { width: 42px; height: 40px; font-size: 15px; }
+  }
 </style>
 
 <div class="wrap">
@@ -871,12 +928,12 @@
   // Mit ?calib=1 lassen sich die Werte im Browser nachjustieren.
   // ---------------------------------------------------------------------
   var MAP_POINTS = [
-    [13.0, 17.0], [22.0, 16.0], [31.0, 17.0], [40.0, 19.0], [49.0, 20.0],
-    [58.0, 20.0], [67.0, 19.0], [76.0, 21.0], [85.0, 25.0], [88.0, 30.0],
-    [83.0, 34.0], [74.0, 36.0], [64.0, 38.0], [54.0, 40.0], [44.0, 42.0],
-    [33.0, 43.0], [22.0, 44.0], [13.0, 47.0], [16.0, 52.0], [26.0, 55.0],
-    [37.0, 57.0], [48.0, 58.0], [59.0, 58.0], [70.0, 56.0], [80.0, 58.0],
-    [85.0, 64.0], [78.0, 70.0], [67.0, 75.0], [58.0, 82.0], [62.0, 91.0]
+    [12.5, 19.3], [22.0, 17.0], [31.0, 18.0], [40.0, 20.0], [49.0, 21.0],
+    [58.0, 21.0], [67.0, 20.0], [76.0, 22.0], [85.0, 26.0], [89.0, 30.7],
+    [84.0, 34.0], [75.0, 36.7], [65.0, 39.3], [55.0, 41.3], [44.0, 43.0],
+    [34.0, 44.0], [23.0, 45.0], [14.0, 47.3], [18.0, 52.7], [27.0, 56.0],
+    [38.0, 58.0], [49.0, 59.3], [60.0, 59.3], [71.0, 58.3], [80.0, 60.0],
+    [86.5, 64.7], [81.0, 70.3], [72.0, 74.7], [54.0, 82.0], [70.0, 95.3]
   ];
   var MAP_W = 1000, MAP_H = 1500; // Bildmaße, dienen als Koordinatensystem der Weglinie
 
