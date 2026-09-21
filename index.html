@@ -88,24 +88,59 @@
   .pet-stage[data-stage="young"] { transform: scale(0.88); }
   .pet-stage[data-stage="adult"] { transform: scale(1); }
   .pet-stage[data-stage="elder"] { transform: scale(1.12); }
+  /* Drei Ebenen, damit sich die Bewegungen nicht gegenseitig überschreiben:
+     .pet-stage = Größe nach Wachstumsstufe, .pet-inner = Schweben und
+     Reaktionen, .pet-img = Atmen und weiches Wechseln des Bildes. */
+  .pet-inner { display: block; height: 100%; transform-origin: 50% 85%; }
   .pet-img {
     display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
     background: #fff; border: 4px solid var(--paper-raised); box-shadow: var(--shadow);
-    transition: opacity .18s ease, transform .18s ease;
+    transition: opacity .18s ease;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+    user-select: none; -webkit-user-drag: none;
   }
-  .pet-img.swap-out { opacity: 0; transform: scale(0.86); }
+  .pet-img.swap-out { opacity: 0; }
+  .pet-img:active { filter: brightness(1.04); }
+
   @media (prefers-reduced-motion: no-preference) {
-    .pet-inner { animation: pet-idle-sway 4.5s ease-in-out infinite; transform-origin: 50% 90%; display: block; height: 100%; }
-    .pet-inner.pet-hop { animation: pet-hop .55s ease-in-out 2; }
+    .pet-inner { animation: pet-float 3.6s ease-in-out infinite; }
+    .pet-img   { animation: pet-breathe 2.9s ease-in-out infinite; }
+    /* Reaktionen ersetzen kurzzeitig das Schweben */
+    .pet-inner.pet-hop   { animation: pet-hop .6s cubic-bezier(.34,1.56,.64,1) 1; }
+    .pet-inner.pet-nod   { animation: pet-nod .7s ease-in-out 1; }
+    .pet-inner.pet-happy { animation: pet-happy 1.1s ease-in-out 1; }
   }
-  @keyframes pet-idle-sway {
-    0%, 50%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-2deg); }
-    75% { transform: rotate(2deg); }
+  @keyframes pet-float {
+    0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+    50%      { transform: translateY(-7px) rotate(1.2deg); }
+  }
+  @keyframes pet-breathe {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.028, 0.985); }
   }
   @keyframes pet-hop {
-    0%, 100% { transform: translateY(0) scale(1); }
-    45% { transform: translateY(-14px) scale(1.06); }
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    30%  { transform: translateY(-20px) rotate(-7deg) scale(1.07, 0.95); }
+    60%  { transform: translateY(0) rotate(5deg) scale(0.95, 1.06); }
+    80%  { transform: translateY(-5px) rotate(-2deg) scale(1.02, 0.99); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
+  }
+  /* Ersatz fürs Blinzeln: ein einzelnes PNG hat keine Lider, daher nickt
+     und wackelt der Panda kurz, damit er trotzdem lebendig wirkt. */
+  @keyframes pet-nod {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    20%      { transform: translateY(3px) rotate(-5deg) scale(1, 0.97); }
+    45%      { transform: translateY(0) rotate(4deg); }
+    70%      { transform: translateY(2px) rotate(-2deg); }
+  }
+  @keyframes pet-happy {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    15%  { transform: translateY(-22px) rotate(-9deg) scale(1.09, 0.94); }
+    35%  { transform: translateY(0) rotate(7deg) scale(0.94, 1.07); }
+    55%  { transform: translateY(-14px) rotate(-6deg) scale(1.06, 0.97); }
+    75%  { transform: translateY(0) rotate(4deg) scale(0.97, 1.03); }
+    90%  { transform: translateY(-4px) rotate(-2deg); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
   }
 
   .status-card { text-align: center; margin-top: 8px; }
@@ -431,7 +466,7 @@
     <div class="stage">
       <div class="pet-stage" id="pet-stage">
         <span class="pet-inner" id="pet-inner">
-          <img class="pet-img" id="pet-img" src="img/idle.jpg" alt="Dein Panda" />
+          <img class="pet-img" id="pet-img" src="img/idle.jpg" alt="Dein Panda" title="Tipp mich an!" />
         </span>
       </div>
     </div>
@@ -982,12 +1017,22 @@
     }, 160);
   }
 
-  function hop() {
+  // Eine Bewegungsklasse setzen und danach wieder abräumen, damit das
+  // Schweben im Ruhezustand weiterläuft. Ein erzwungener Reflow startet
+  // dieselbe Animation auch bei schnellen Klicks hintereinander neu.
+  var MOVES = ["pet-hop", "pet-nod", "pet-happy"];
+  var moveTimer = null;
+  function playMove(cls, ms) {
     if (reduceMotion) return;
-    el.petInner.classList.remove("pet-hop");
-    void el.petInner.offsetWidth; // Neustart der Animation erzwingen
-    el.petInner.classList.add("pet-hop");
+    clearTimeout(moveTimer);
+    MOVES.forEach(function (c) { el.petInner.classList.remove(c); });
+    void el.petInner.offsetWidth;
+    el.petInner.classList.add(cls);
+    moveTimer = setTimeout(function () { el.petInner.classList.remove(cls); }, ms);
   }
+  function hop() { playMove("pet-hop", 600); }
+  function nod() { playMove("pet-nod", 700); }
+  function cheer() { playMove("pet-happy", 1100); }
 
   function reactPanda(state, ms) {
     clearTimeout(petReactionTimer);
@@ -999,7 +1044,28 @@
       setPandaImage(resolvePandaState());
     }, ms);
   }
-  function celebrate() { reactPanda("happy", 1600); }
+  function celebrate() {
+    clearTimeout(petReactionTimer);
+    petReactionActive = true;
+    setPandaImage("happy");
+    cheer();
+    petReactionTimer = setTimeout(function () {
+      petReactionActive = false;
+      setPandaImage(resolvePandaState());
+    }, 1800);
+  }
+
+  // Antippen oder anklicken: Hopser mit Drehung, dazu ein kurzes Lächeln.
+  var petPokeTimer = null;
+  el.petImg.addEventListener("click", function () {
+    hop();
+    if (petReactionActive) return;     // laufende Reaktion nicht stören
+    setPandaImage("happy");
+    clearTimeout(petPokeTimer);
+    petPokeTimer = setTimeout(function () {
+      if (!petReactionActive) setPandaImage(resolvePandaState());
+    }, 900);
+  });
 
   function signedIn() { return !!currentUid || offlineMode; }
 
@@ -1914,15 +1980,16 @@
   // ohnehin durchgehend per CSS.
   // ---------------------------------------------------------------------
   function scheduleIdleTic() {
-    var delay = 7000 + Math.random() * 7000;
+    var delay = 4500 + Math.random() * 5000;
     setTimeout(function () {
       if (pet.adopted && document.visibilityState !== "hidden" && !petReactionActive) {
         var kungfuOpened = pet.giftsOpened.indexOf(21) !== -1;
         var bambooOpened = pet.giftsOpened.indexOf(7) !== -1 || pet.giftsOpened.indexOf(14) !== -1;
         var r = Math.random();
-        if (kungfuOpened && r < 0.18) reactPanda("kungfu", 1800);
-        else if (bambooOpened && r < 0.38) reactPanda("playing", 1800);
-        else if (r < 0.5) hop();
+        if (kungfuOpened && r < 0.14) reactPanda("kungfu", 1800);
+        else if (bambooOpened && r < 0.28) reactPanda("playing", 1800);
+        else if (r < 0.62) nod();      // Ersatz fürs Blinzeln
+        else if (r < 0.78) hop();
       }
       scheduleIdleTic();
     }, delay);
