@@ -236,15 +236,8 @@
     box-shadow: var(--shadow); line-height: 0;
   }
   .journey-bg { display: block; width: 100%; height: auto; }
-  /* Schleier: die gemalten Zahlen im Bild sind fehlerhaft (11, 16 und 25
-     doppelt, 12 fehlt). Sie treten zurück, der echte Weg liegt darüber. */
-  .journey-veil { position: absolute; inset: 0; background: rgba(255, 255, 255, 0.42); pointer-events: none; }
   .journey-line { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
   .journey-dots { position: absolute; inset: 0; line-height: 1; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .journey-veil { background: rgba(20, 24, 20, 0.45); }
-  }
-  :root[data-theme="dark"] .journey-veil { background: rgba(20, 24, 20, 0.45); }
   .mk {
     position: absolute; transform: translate(-50%, -50%);
     width: 7.4%; aspect-ratio: 1; border-radius: 50%;
@@ -563,8 +556,7 @@
 
     <div class="journey-map" id="map-wrap">
       <img class="journey-bg" src="img/map.jpg" alt="Panda-Reisekarte mit 30 Feldern" />
-      <div class="journey-veil"></div>
-      <svg class="journey-line" id="map-line" viewBox="0 0 1000 1250" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <svg class="journey-line" id="map-line" viewBox="0 0 1000 1500" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
         <polyline id="path-base" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"></polyline>
         <polyline id="path-base2" fill="none" stroke="#b9a06a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 22" opacity="0.9"></polyline>
         <polyline id="path-done" fill="none" stroke="#C8A02E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
@@ -879,14 +871,14 @@
   // Mit ?calib=1 lassen sich die Werte im Browser nachjustieren.
   // ---------------------------------------------------------------------
   var MAP_POINTS = [
-    [18.0, 18.0], [29.0, 19.0], [38.5, 20.5], [48.0, 22.0], [58.0, 21.5],
-    [68.0, 20.5], [79.3, 22.8], [88.0, 26.0], [91.0, 30.2], [90.0, 35.2],
-    [84.0, 39.2], [74.0, 41.0], [58.0, 43.0], [40.0, 44.3], [24.0, 46.5],
-    [13.5, 51.0], [19.0, 56.5], [32.0, 58.0], [44.0, 59.5], [60.0, 61.5],
-    [78.2, 64.2], [89.0, 65.5], [92.0, 70.0], [82.0, 75.0], [72.0, 76.2],
-    [62.0, 77.2], [52.0, 78.6], [46.0, 83.0], [59.0, 88.5], [78.0, 94.5]
+    [13.0, 17.0], [22.0, 16.0], [31.0, 17.0], [40.0, 19.0], [49.0, 20.0],
+    [58.0, 20.0], [67.0, 19.0], [76.0, 21.0], [85.0, 25.0], [88.0, 30.0],
+    [83.0, 34.0], [74.0, 36.0], [64.0, 38.0], [54.0, 40.0], [44.0, 42.0],
+    [33.0, 43.0], [22.0, 44.0], [13.0, 47.0], [16.0, 52.0], [26.0, 55.0],
+    [37.0, 57.0], [48.0, 58.0], [59.0, 58.0], [70.0, 56.0], [80.0, 58.0],
+    [85.0, 64.0], [78.0, 70.0], [67.0, 75.0], [58.0, 82.0], [62.0, 91.0]
   ];
-  var MAP_W = 1000, MAP_H = 1250; // Bildmaße, dienen als Koordinatensystem der Weglinie
+  var MAP_W = 1000, MAP_H = 1500; // Bildmaße, dienen als Koordinatensystem der Weglinie
 
   // ---------------------------------------------------------------------
   // PANDA-BILDZUSTÄNDE — dieselbe Figur in acht Posen, als relative
