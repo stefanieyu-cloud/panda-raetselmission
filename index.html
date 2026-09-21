@@ -188,6 +188,40 @@
   .care-bar.health > span { background: var(--seal); }
   .care-val { width: 42px; text-align: right; font-weight: 700; color: var(--ink-soft); flex-shrink: 0; }
   .care-state { flex: 1; font-weight: 700; color: var(--ink); font-size: 13.5px; }
+  .streak-row { text-align: center; margin-top: 8px; font-size: 14px; font-weight: 700; color: var(--seal); }
+
+  /* Einklappbare Bereiche: der Panda bleibt das Hauptobjekt */
+  .fold { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .fold > summary {
+    cursor: pointer; list-style: none; font-weight: 700; font-size: 13.5px; color: var(--ink-soft);
+    padding: 6px 2px; display: flex; align-items: center; gap: 8px;
+  }
+  .fold > summary::-webkit-details-marker { display: none; }
+  .fold > summary::before { content: "▸"; transition: transform .2s; display: inline-block; }
+  .fold[open] > summary::before { transform: rotate(90deg); }
+  .fold > summary:hover { color: var(--ink); }
+  .fold-hint { margin-left: auto; font-weight: 400; color: var(--ink-soft); font-size: 12px; }
+  header.hero .fold { margin-top: 12px; }
+
+  /* Zimmer-Deko rund um den Panda */
+  .decor { position: absolute; font-size: 22px; pointer-events: none; z-index: 5; }
+  .decor.d0 { left: 2%; top: 6%; } .decor.d1 { right: 2%; top: 6%; }
+  .decor.d2 { left: 0%; bottom: 16%; } .decor.d3 { right: 0%; bottom: 16%; }
+
+  /* Besuch bei Klassenkamerad:innen */
+  .lb-detail { margin-top: 12px; }
+  .visit-box {
+    border: 1.5px solid var(--jade); border-radius: 14px; padding: 12px; text-align: center;
+    background: color-mix(in srgb, var(--jade) 7%, var(--paper-raised));
+  }
+  .visit-img { width: 110px; height: 110px; object-fit: contain; mix-blend-mode: multiply; display: block; margin: 0 auto 6px; }
+  .visit-name { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 16px; margin: 0 0 4px; }
+  .visit-info { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 8px; }
+  .lb-visit-load { font-size: 13px; color: var(--ink-soft); text-align: center; }
+  .lb-row { cursor: pointer; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .visit-img { mix-blend-mode: normal; border-radius: 12px; }
+  }
   .care-btns { display: flex; gap: 8px; margin-top: 12px; }
   .care-btns button { flex: 1; }
   .care-hint { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
@@ -521,13 +555,16 @@
     <h1>Panda <span class="cn" id="hero-lesson-title">您好吗？</span></h1>
     <p class="sub">Kleine Rätsel lösen, Dumpling-Stempel sammeln und deinen Panda auf seiner
       30-Tage-Reise begleiten &ndash; Wortschatz und Grammatik aus dem Kursbuch, in bunten Mini-Spielen.</p>
-    <div class="lesson-select-row">
-      <label for="lesson-select">Übungsbereich:</label>
-      <select id="lesson-select"></select>
-    </div>
-    <p class="lesson-note">Teil A und Teil B werden nie vermischt. "Lektion 1 (alle Teile)" übt beide
-      zusammen inkl. Satzbau. Jeder Tag, an dem du mindestens ein Rätsel löst, bringt deinen Panda
-      einen Schritt weiter auf der Karte &ndash; egal welchen Rätseltyp du wählst.</p>
+    <details class="fold" id="fold-lesson">
+      <summary>⚙️ Übungsbereich &amp; Hinweise</summary>
+      <div class="lesson-select-row">
+        <label for="lesson-select">Übungsbereich:</label>
+        <select id="lesson-select"></select>
+      </div>
+      <p class="lesson-note">Teil A und Teil B werden nie vermischt. "Lektion 1 (alle Teile)" übt beide
+        zusammen inkl. Satzbau. Jeder Tag, an dem du mindestens ein Rätsel löst, bringt deinen Panda
+        einen Schritt weiter auf der Karte &ndash; egal welchen Rätseltyp du wählst.</p>
+    </details>
   </header>
 
   <section class="card" id="view-auth" hidden>
@@ -583,6 +620,7 @@
       <p class="p-line" id="p-born"></p>
       <p class="p-line" id="p-day"></p>
       <p class="p-status"><span id="p-status-icon"></span> <span id="p-status-label"></span></p>
+      <p class="streak-row" id="streak-row"></p>
       <p class="dumpling-row" id="dumpling-row"></p>
     </div>
 
@@ -607,32 +645,42 @@
         <button class="btn-primary" id="btn-feed">🎋 Füttern</button>
         <button class="btn-ghost" id="btn-play">🎾 Spielen</button>
         <button class="btn-ghost" id="btn-clean">🧹 Saubermachen</button>
+        <button class="btn-ghost" id="btn-medicine" hidden>💊 Medizin</button>
       </div>
       <p class="care-hint" id="care-hint"></p>
+      <p style="text-align:center;margin-top:6px;">
+        <button class="btn-link" id="btn-notify">🔔 Erinnerung einschalten</button>
+      </p>
     </div>
 
+    <details class="fold" id="fold-map">
+      <summary>🗺️ Deine Reise <span class="fold-hint" id="fold-map-hint"></span></summary>
     <div class="journey-map" id="map-wrap">
       <img class="journey-bg" src="img/map.jpg" alt="Panda-Reisekarte mit 30 Feldern" />
       <svg class="journey-line" id="map-line" viewBox="0 0 1000 1500" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <polyline id="path-base" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"></polyline>
-        <polyline id="path-base2" fill="none" stroke="#b9a06a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 22" opacity="0.9"></polyline>
-        <polyline id="path-done" fill="none" stroke="#C8A02E" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></polyline>
+        <path id="path-base" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"></path>
+        <path id="path-base2" fill="none" stroke="#b08f55" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 20" opacity="0.85"></path>
+        <path id="path-done" fill="none" stroke="#C8A02E" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"></path>
       </svg>
       <div class="journey-dots" id="map-dots"></div>
     </div>
     <p class="map-caption" id="map-caption"></p>
 
-    <p class="pass-heading">🎫 Panda-Pass</p>
-    <div class="gift-row" id="gift-row"></div>
+      <p class="pass-heading">🎫 Panda-Pass</p>
+      <div class="gift-row" id="gift-row"></div>
+      <p class="pass-heading">🏠 Panda-Zimmer</p>
+      <div class="gift-row" id="decor-row"></div>
+    </details>
 
-    <div id="leaderboard-wrap" hidden>
-      <p class="pass-heading">🏅 Bestenliste</p>
+    <details class="fold" id="leaderboard-wrap" hidden>
+      <summary>🏅 Bestenliste <span class="fold-hint" id="fold-lb-hint"></span></summary>
       <div class="lb-list" id="lb-list"></div>
       <div style="text-align:center;margin-top:10px;">
         <button class="btn-link" id="btn-lb-refresh">Aktualisieren</button>
         <button class="btn-link" id="btn-logout">Abmelden</button>
       </div>
-    </div>
+      <div class="lb-detail" id="lb-detail" hidden></div>
+    </details>
 
 
     <div class="test-panel" id="test-panel" hidden>
@@ -927,14 +975,26 @@
   // den vier gemalten Belohnungen (Stern, Bambus, Kung-Fu-Zeichen, Pokal).
   // Mit ?calib=1 lassen sich die Werte im Browser nachjustieren.
   // ---------------------------------------------------------------------
-  var MAP_POINTS = [
-    [12.5, 19.3], [22.0, 17.0], [31.0, 18.0], [40.0, 20.0], [49.0, 21.0],
-    [58.0, 21.0], [67.0, 20.0], [76.0, 22.0], [85.0, 26.0], [89.0, 30.7],
-    [84.0, 34.0], [75.0, 36.7], [65.0, 39.3], [55.0, 41.3], [44.0, 43.0],
-    [34.0, 44.0], [23.0, 45.0], [14.0, 47.3], [18.0, 52.7], [27.0, 56.0],
-    [38.0, 58.0], [49.0, 59.3], [60.0, 59.3], [71.0, 58.3], [80.0, 60.0],
-    [86.5, 64.7], [81.0, 70.3], [72.0, 74.7], [54.0, 82.0], [70.0, 95.3]
+  // Der Weg als Stützpunktkette. Einträge mit dritter Zahl sind die
+  // begehbaren Tagesfelder 1-30, die übrigen formen nur die Kurven,
+  // damit die Linie dem gemalten Weg folgt statt Biegungen abzuschneiden.
+  var MAP_PATH = [
+    [12.5, 19.3, 1], [17.0, 17.6], [22.0, 17.0, 2], [26.5, 17.2], [31.0, 18.0, 3],
+    [35.5, 19.0], [40.0, 20.0, 4], [44.5, 20.8], [49.0, 21.0, 5], [53.5, 21.3],
+    [58.0, 21.0, 6], [62.5, 20.3], [67.0, 20.0, 7], [71.5, 20.7], [76.0, 22.0, 8],
+    [81.0, 23.6], [85.0, 26.0, 9], [88.0, 28.2], [89.0, 30.7, 10], [88.0, 32.6],
+    [84.0, 34.0, 11], [79.5, 35.3], [75.0, 36.7, 12], [70.0, 38.0], [65.0, 39.3, 13],
+    [60.0, 40.4], [55.0, 41.3, 14], [49.5, 42.2], [44.0, 43.0, 15], [39.0, 43.6],
+    [34.0, 44.0, 16], [28.5, 44.4], [23.0, 45.0, 17], [17.5, 45.8], [14.0, 47.3, 18],
+    [13.2, 49.8], [15.2, 51.7], [18.0, 52.7, 19], [22.5, 54.4], [27.0, 56.0, 20],
+    [32.5, 57.2], [38.0, 58.0, 21], [43.5, 58.8], [49.0, 59.3, 22], [54.5, 59.5],
+    [60.0, 59.3, 23], [65.5, 58.7], [71.0, 58.3, 24], [76.0, 58.8], [80.0, 60.0, 25],
+    [84.5, 62.2], [86.5, 64.7, 26], [85.5, 67.6], [81.0, 70.3, 27], [76.5, 72.6],
+    [72.0, 74.7, 28], [66.0, 77.2], [60.0, 79.6], [54.0, 82.0, 29], [51.8, 85.8],
+    [55.0, 90.2], [62.0, 93.4], [70.0, 95.3, 30]
   ];
+  var MAP_POINTS = MAP_PATH.filter(function (p) { return p.length > 2; })
+                           .map(function (p) { return [p[0], p[1]]; });
   var MAP_W = 1000, MAP_H = 1500; // Bildmaße, dienen als Koordinatensystem der Weglinie
 
   // ---------------------------------------------------------------------
@@ -957,8 +1017,22 @@
   var DEFAULT_PET = {
     adopted: false, name: "", birth: "", lastVisit: "",
     lastCareDate: "", currentLesson: "l1a", solvedToday: [], solvedDays: [], giftsOpened: [],
-    hunger: 100, health: 100, poops: 0, lastTick: 0, wokenAt: 0
+    hunger: 100, health: 100, poops: 0, lastTick: 0, wokenAt: 0,
+    streak: 0, bestStreak: 0, lastMedicine: 0
   };
+  var SICK_BELOW = 35;          // ab hier ist der Panda krank
+  var MEDICINE_COOLDOWN_H = 6;  // Medizin nicht beliebig oft
+  var DECOR = [                 // Zimmer-Deko, wächst mit den Meilensteinen
+    { at: 7,  icon: "🏮", name: "Laterne" },
+    { at: 14, icon: "🎋", name: "Bambuspflanze" },
+    { at: 21, icon: "🪴", name: "Topfpflanze" },
+    { at: 30, icon: "🏆", name: "Pokal" }
+  ];
+  function isSick() { return pet.health < SICK_BELOW; }
+  function yesterdayStr() {
+    var d = new Date(); d.setDate(d.getDate() - 1);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
 
   // ---------------------------------------------------------------------
   // PFLEGE — läuft über echte Zeit in einem 24-Stunden-Rhythmus.
@@ -1002,6 +1076,19 @@
     reactPanda("eating", 2000);
     renderPet();
     toast("Mahlzeit! 🎋");
+  }
+
+  function giveMedicine() {
+    if (!isSick()) { toast(pet.name + " ist nicht krank. 😊"); return; }
+    var sinceH = (Date.now() - (pet.lastMedicine || 0)) / 3600000;
+    if (sinceH < MEDICINE_COOLDOWN_H) {
+      toast("Medizin wirkt noch. Wieder in " + Math.ceil(MEDICINE_COOLDOWN_H - sinceH) + " h.");
+      return;
+    }
+    pet.health = clamp(pet.health + 30, HEALTH_FLOOR, 100);
+    pet.lastMedicine = Date.now();
+    savePet(); renderPet(); hop();
+    toast("Gute Besserung! 💊");
   }
 
   function cleanPanda() {
@@ -1101,6 +1188,7 @@
       dumplings: (pet.solvedDays || []).length,
       hunger: Math.round(pet.hunger), health: Math.round(pet.health),
       poops: pet.poops || 0, lastTick: pet.lastTick || Date.now(),
+      streak: pet.streak || 0, bestStreak: pet.bestStreak || 0,
       updatedAt: Date.now()
     }).catch(function () { /* offline: localStorage bleibt die Wahrheit */ });
   }
@@ -1120,7 +1208,9 @@
       hunger: typeof data.hunger === "number" ? data.hunger : 100,
       health: typeof data.health === "number" ? data.health : 100,
       poops: typeof data.poops === "number" ? data.poops : 0,
-      lastTick: typeof data.lastTick === "number" ? data.lastTick : Date.now()
+      lastTick: typeof data.lastTick === "number" ? data.lastTick : Date.now(),
+      streak: typeof data.streak === "number" ? data.streak : 0,
+      bestStreak: typeof data.bestStreak === "number" ? data.bestStreak : 0
     });
   }
 
@@ -1145,6 +1235,7 @@
   // Bedürfnisse stehen oben, damit Anzeige und Aussehen nie auseinanderlaufen.
   function statusOf() {
     if (isAsleep())   return { icon: "😴", label: "schläft",              img: "idle",   note: "Nachtruhe bis 7 Uhr." };
+    if (isSick())     return { icon: "🤒", label: "krank",                img: "sad",    note: "Gib ihm Medizin, dann wird er schnell wieder fit." };
     if (isGrumpy())   return { icon: "😾", label: "müde und mürrisch",    img: "sad",    note: "Frisch geweckt. Spielen hilft." };
     if (pet.poops >= 2) return { icon: "🤢", label: "braucht Sauberkeit", img: "sad",    note: "Bitte saubermachen." };
     if (pet.hunger <= 0) return { icon: "😫", label: "sehr hungrig",      img: "hungry", note: "Dringend füttern!" };
@@ -1196,6 +1287,10 @@
     barHunger: document.getElementById("bar-hunger"), barHealth: document.getElementById("bar-health"),
     valHunger: document.getElementById("val-hunger"), valHealth: document.getElementById("val-health"),
     careHint: document.getElementById("care-hint"), careState: document.getElementById("care-state"),
+    btnMedicine: document.getElementById("btn-medicine"), streakRow: document.getElementById("streak-row"),
+    decorRow: document.getElementById("decor-row"), lbDetail: document.getElementById("lb-detail"),
+    foldLesson: document.getElementById("fold-lesson"), foldMap: document.getElementById("fold-map"),
+    foldMapHint: document.getElementById("fold-map-hint"), foldLbHint: document.getElementById("fold-lb-hint"),
     pName: document.getElementById("p-name"), pBorn: document.getElementById("p-born"), pDay: document.getElementById("p-day"),
     pStatusIcon: document.getElementById("p-status-icon"), pStatusLabel: document.getElementById("p-status-label"),
     dumplingRow: document.getElementById("dumpling-row"),
@@ -1316,16 +1411,72 @@
     }
 
     el.stageEl.classList.toggle("asleep", isAsleep());
+    el.btnMedicine.hidden = !isSick();
 
     // Dieselbe Quelle wie die Statuszeile oben, damit nichts auseinanderläuft.
     var st = statusOf();
     el.careState.textContent = st.icon + " " + st.label;
     el.careHint.textContent = st.note;
+
+    // Serie
+    var s = pet.streak || 0;
+    if (s >= 2) {
+      el.streakRow.hidden = false;
+      el.streakRow.textContent = "🔥 " + s + " Tage in Folge"
+        + ((pet.bestStreak || 0) > s ? " (Bestwert " + pet.bestStreak + ")" : "");
+    } else { el.streakRow.hidden = true; }
+
+    // Panda-Zimmer: Deko wächst mit den Meilensteinen
+    var dc = dumplingCount();
+    el.decorRow.innerHTML = "";
+    DECOR.forEach(function (d) {
+      var has = dc >= d.at;
+      var chip = document.createElement("div");
+      chip.className = "gift-chip" + (has ? " opened" : " locked");
+      chip.innerHTML = '<span class="gc-icon">' + (has ? d.icon : "❔") + '</span><span>'
+        + (has ? d.name : d.at + " 🥟") + '</span>';
+      el.decorRow.appendChild(chip);
+    });
+    // freigeschaltete Deko rund um den Panda zeigen
+    el.stageEl.querySelectorAll(".decor").forEach(function (n) { n.remove(); });
+    var shown = DECOR.filter(function (d) { return dc >= d.at; });
+    shown.forEach(function (d, i) {
+      var sp = document.createElement("span");
+      sp.className = "decor d" + i;
+      sp.textContent = d.icon;
+      sp.title = d.name;
+      el.stageEl.appendChild(sp);
+    });
   }
 
   document.getElementById("btn-feed").addEventListener("click", feedPanda);
   document.getElementById("btn-clean").addEventListener("click", cleanPanda);
   document.getElementById("btn-play").addEventListener("click", playWithPanda);
+  el.btnMedicine.addEventListener("click", giveMedicine);
+
+  // ---------------------------------------------------------------------
+  // ERINNERUNG — funktioniert nur, solange die Seite offen ist. Ohne
+  // eigenen Server sind echte Push-Nachrichten nicht möglich; das steht
+  // auch so im Hinweistext, damit niemand etwas anderes erwartet.
+  // ---------------------------------------------------------------------
+  var notifyOn = false, lastNotify = 0;
+  document.getElementById("btn-notify").addEventListener("click", function () {
+    if (!("Notification" in window)) { toast("Dein Browser kann keine Erinnerungen."); return; }
+    Notification.requestPermission().then(function (perm) {
+      if (perm === "granted") {
+        notifyOn = true;
+        toast("Erinnerung aktiv, solange die Seite offen ist. 🔔");
+      } else { toast("Erinnerung wurde abgelehnt."); }
+    });
+  });
+  function maybeNotify() {
+    if (!notifyOn || !pet.adopted || isAsleep()) return;
+    if (Date.now() - lastNotify < 2 * 3600000) return;   // höchstens alle zwei Stunden
+    var why = pet.poops >= 2 ? "hat es unordentlich" : (pet.hunger < 20 ? "hat Hunger" : (isSick() ? "ist krank" : ""));
+    if (!why) return;
+    lastNotify = Date.now();
+    try { new Notification("Panda Rätselmission", { body: pet.name + " " + why + ". 🐼" }); } catch (e) {}
+  }
 
   function signedIn() { return !!currentUid || offlineMode; }
 
@@ -1402,11 +1553,41 @@
           + '<span class="lb-name"></span>'
           + '<span class="lb-score">🥟 ' + r.dumplings + '</span>';
         row.querySelector(".lb-name").textContent = r.nickname; // als Text, nie als HTML
+        row.title = "Panda ansehen";
+        row.addEventListener("click", function () { showVisit(r); });
         el.lbList.appendChild(row);
       });
     }).catch(function () {
       el.lbList.innerHTML = '<p class="lb-empty">Bestenliste gerade nicht erreichbar.</p>';
     });
+  }
+
+  // Besuch: zeigt den Panda einer anderen Person, nur zum Anschauen.
+  function showVisit(r) {
+    el.lbDetail.hidden = false;
+    el.lbDetail.innerHTML = '<p class="lb-visit-load">Wird geladen…</p>';
+    fbDb.collection("pandas").doc(r.uid).get().then(function (snap) {
+      if (!snap.exists) { el.lbDetail.innerHTML = '<p class="lb-visit-load">Nicht gefunden.</p>'; return; }
+      var d = snap.data();
+      var img = PANDA_IMG.idle;
+      if ((d.health || 100) < SICK_BELOW || (d.poops || 0) >= 2) img = PANDA_IMG.sad;
+      else if ((d.hunger || 100) < 30) img = PANDA_IMG.hungry;
+      else if ((d.dumplings || 0) >= GOAL_DAYS) img = PANDA_IMG.badge;
+      el.lbDetail.innerHTML = '';
+      var box = document.createElement("div");
+      box.className = "visit-box";
+      var im = document.createElement("img"); im.className = "visit-img"; im.src = img; im.alt = "";
+      var h = document.createElement("p"); h.className = "visit-name";
+      h.textContent = (d.pandaName || "Panda") + " von " + (d.nickname || "?");
+      var info = document.createElement("p"); info.className = "visit-info";
+      info.textContent = "🥟 " + (d.dumplings || 0) + " von " + GOAL_DAYS
+        + " · ❤️ " + Math.round(d.health || 100) + " HP"
+        + (d.birth ? " · seit " + formatDateDE(d.birth) : "");
+      var close = document.createElement("button"); close.className = "btn-link"; close.textContent = "Schließen";
+      close.addEventListener("click", function () { el.lbDetail.hidden = true; });
+      box.appendChild(im); box.appendChild(h); box.appendChild(info); box.appendChild(close);
+      el.lbDetail.appendChild(box);
+    }).catch(function () { el.lbDetail.innerHTML = '<p class="lb-visit-load">Konnte nicht geladen werden.</p>'; });
   }
 
   document.getElementById("btn-login").addEventListener("click", function () { doAuth("login"); });
@@ -1481,16 +1662,32 @@
     savePet(); renderPet();
   });
 
+  // Catmull-Rom-Glättung: macht aus der Stützpunktkette eine weiche Kurve.
+  function smoothPath(pts) {
+    if (pts.length < 2) return "";
+    var d = "M" + pts[0][0].toFixed(1) + "," + pts[0][1].toFixed(1);
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i > 0 ? i - 1 : 0], p1 = pts[i], p2 = pts[i + 1];
+      var p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+      var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += "C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " + c2x.toFixed(1) + "," + c2y.toFixed(1)
+        + " " + p2[0].toFixed(1) + "," + p2[1].toFixed(1);
+    }
+    return d;
+  }
+
   function renderMap(dCount) {
     var here = clamp(dCount, 1, GOAL_DAYS);
 
-    // Weglinie: heller Grundweg über alle Felder, goldener Teil bis zum
-    // aktuellen Feld – so ist der Fortschritt in einer Linie ablesbar.
-    var toPx = function (p) { return (p[0] / 100 * MAP_W).toFixed(1) + "," + (p[1] / 100 * MAP_H).toFixed(1); };
-    var allPts = MAP_POINTS.map(toPx).join(" ");
-    el.pathBase.setAttribute("points", allPts);
-    el.pathBase2.setAttribute("points", allPts);
-    el.pathDone.setAttribute("points", MAP_POINTS.slice(0, Math.max(1, Math.min(dCount, GOAL_DAYS))).map(toPx).join(" "));
+    // Weglinie als weiche Kurve durch alle Stützpunkte, damit sie den
+    // gemalten Biegungen folgt. Der goldene Teil endet am aktuellen Feld.
+    var allPx = MAP_PATH.map(function (p) { return [p[0] / 100 * MAP_W, p[1] / 100 * MAP_H]; });
+    el.pathBase.setAttribute("d", smoothPath(allPx));
+    el.pathBase2.setAttribute("d", smoothPath(allPx));
+    var upTo = 0;
+    for (var pi = 0; pi < MAP_PATH.length; pi++) { if (MAP_PATH[pi][2] === here) { upTo = pi; break; } }
+    el.pathDone.setAttribute("d", dCount > 0 ? smoothPath(allPx.slice(0, upTo + 1)) : "");
 
     el.mapDots.innerHTML = "";
     MAP_POINTS.forEach(function (pt, i) {
@@ -1611,6 +1808,8 @@
     renderMap(dCount);
     renderGifts(dCount);
     renderHub();
+    el.foldMapHint.textContent = "Feld " + clamp(dCount, 1, GOAL_DAYS) + " von " + GOAL_DAYS;
+    maybeNotify();
   }
 
   function renderHub() {
@@ -1698,9 +1897,16 @@
     var already = pet.solvedToday.indexOf(key) !== -1;
     var newDay = false;
     if (!already) {
+      var prevCare = pet.lastCareDate;   // vor dem Überschreiben merken
       pet.solvedToday.push(key);
       pet.lastCareDate = todayStr();
-      if (pet.solvedDays.indexOf(todayStr()) === -1) { pet.solvedDays.push(todayStr()); newDay = true; }
+      if (pet.solvedDays.indexOf(todayStr()) === -1) {
+        // Serie: gestern geübt heisst weiterzählen, sonst neu beginnen.
+        pet.streak = (prevCare === yesterdayStr()) ? (pet.streak || 0) + 1 : 1;
+        if (pet.streak > (pet.bestStreak || 0)) pet.bestStreak = pet.streak;
+        pet.solvedDays.push(todayStr());
+        newDay = true;
+      }
       savePet();
     }
     celebrate();
