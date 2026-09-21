@@ -66,7 +66,11 @@
     border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper); color: var(--ink); text-align: center;
   }
   .storage-note { font-size: 11.5px; color: var(--ink-soft); text-align: center; max-width: 320px; margin: 4px auto 0; line-height: 1.5; }
-  .adopt-hero-img { display: block; width: 150px; height: 150px; object-fit: cover; border-radius: 50%; margin: 0 auto 14px; box-shadow: var(--shadow); }
+  .adopt-hero-img { display: block; width: 160px; height: 160px; object-fit: contain; margin: 0 auto 10px; mix-blend-mode: multiply; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .adopt-hero-img { mix-blend-mode: normal; border-radius: 14px; }
+  }
+  :root[data-theme="dark"] .adopt-hero-img { mix-blend-mode: normal; border-radius: 14px; }
 
   .lesson-select-row { margin-top: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .lesson-select-row label { font-size: 13px; color: var(--ink-soft); }
@@ -93,12 +97,18 @@
      Reaktionen, .pet-img = Atmen und weiches Wechseln des Bildes. */
   .pet-inner { display: block; height: 100%; transform-origin: 50% 85%; }
   .pet-img {
-    display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-    background: #fff; border: 4px solid var(--paper-raised); box-shadow: var(--shadow);
+    display: block; width: 100%; height: 100%; object-fit: contain;
     transition: opacity .18s ease;
     cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     user-select: none; -webkit-user-drag: none;
+    /* Die Bilder haben weissen Hintergrund: Multiply laesst ihn auf hellem
+       Papier verschwinden, so wirkt der Panda freigestellt statt gerahmt. */
+    mix-blend-mode: multiply;
   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .pet-img { mix-blend-mode: normal; border-radius: 14px; }
+  }
+  :root[data-theme="dark"] .pet-img { mix-blend-mode: normal; border-radius: 14px; }
   .pet-img.swap-out { opacity: 0; }
   .pet-img:active { filter: brightness(1.04); }
 
@@ -174,6 +184,7 @@
   .care-bar.hunger > span { background: var(--jade); }
   .care-bar.health > span { background: var(--seal); }
   .care-val { width: 42px; text-align: right; font-weight: 700; color: var(--ink-soft); flex-shrink: 0; }
+  .care-state { flex: 1; font-weight: 700; color: var(--ink); font-size: 13.5px; }
   .care-btns { display: flex; gap: 8px; margin-top: 12px; }
   .care-btns button { flex: 1; }
   .care-hint { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
@@ -251,9 +262,9 @@
     .mk.gift { animation: giftPulse 1.1s ease-in-out infinite; }
   }
   .mk-panda {
-    position: absolute; width: 12%; aspect-ratio: 1; transform: translate(-50%, -112%);
-    border-radius: 50%; object-fit: cover; border: 3px solid #fff; background: #fff;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35); z-index: 6;
+    position: absolute; width: 14%; aspect-ratio: 1; transform: translate(-50%, -112%);
+    object-fit: contain; mix-blend-mode: multiply; z-index: 6;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35));
   }
   @media (prefers-reduced-motion: no-preference) {
     .mk-panda { animation: mk-bob 2.2s ease-in-out infinite; }
@@ -536,6 +547,10 @@
           <span class="care-label">❤️ Gesundheit</span>
           <span class="care-bar health"><span id="bar-health"></span></span>
           <span class="care-val" id="val-health"></span>
+        </div>
+        <div class="care-row care-state-row">
+          <span class="care-label">🐼 Zustand</span>
+          <span class="care-state" id="care-state"></span>
         </div>
       </div>
       <div class="care-btns">
@@ -1077,12 +1092,22 @@
     if (!pet.lastCareDate) return 99;
     return daysBetween(pet.lastCareDate, todayStr());
   }
+  // Eine einzige Quelle für Emoji, Text und Bild. Die dringendsten
+  // Bedürfnisse stehen oben, damit Anzeige und Aussehen nie auseinanderlaufen.
   function statusOf() {
+    if (isAsleep())   return { icon: "😴", label: "schläft",              img: "idle",   note: "Nachtruhe bis 7 Uhr." };
+    if (isGrumpy())   return { icon: "😾", label: "müde und mürrisch",    img: "sad",    note: "Frisch geweckt. Spielen hilft." };
+    if (pet.poops >= 2) return { icon: "🤢", label: "braucht Sauberkeit", img: "sad",    note: "Bitte saubermachen." };
+    if (pet.hunger <= 0) return { icon: "😫", label: "sehr hungrig",      img: "hungry", note: "Dringend füttern!" };
+    if (pet.poops > 0)  return { icon: "⚠️", label: "braucht Pflege",     img: "sad",    note: "Ein Häufchen wartet." };
+    if (pet.hunger < 30) return { icon: "🍽️", label: "hungrig",           img: "hungry", note: "Zeit für Bambus." };
+    if (pet.health < 60) return { icon: "🤕", label: "erholt sich",       img: "idle",   note: "Wird langsam wieder fit." };
+    if (dumplingCount() >= GOAL_DAYS) return { icon: "🏅", label: "am Ziel", img: "badge", note: "Alle 30 Felder geschafft!" };
     var d = daysSinceCare();
-    if (d <= 0) return { icon: "😊", label: "glücklich" };
-    if (d === 1) return { icon: "🙂", label: "zufrieden" };
-    if (d === 2) return { icon: "😴", label: "wartet auf dich" };
-    return { icon: "⚠️", label: "braucht Pflege" };
+    if (d <= 0) return { icon: "😊", label: "glücklich",         img: "happy",  note: "Heute schon geübt." };
+    if (d === 1) return { icon: "🙂", label: "zufrieden",        img: "idle",   note: "Ein Rätsel wäre schön." };
+    if (d === 2) return { icon: "😔", label: "vermisst dich",    img: "hungry", note: "Zwei Tage ohne Übung." };
+    return { icon: "😢", label: "vermisst dich sehr",            img: "sad",    note: "Lange nicht geübt." };
   }
   function dumplingCount() { return pet.solvedDays.length; }
   function growthStageOf(dCount) {
@@ -1121,7 +1146,7 @@
     petImg: document.getElementById("pet-img"), stageEl: document.querySelector(".stage"),
     barHunger: document.getElementById("bar-hunger"), barHealth: document.getElementById("bar-health"),
     valHunger: document.getElementById("val-hunger"), valHealth: document.getElementById("val-health"),
-    careHint: document.getElementById("care-hint"),
+    careHint: document.getElementById("care-hint"), careState: document.getElementById("care-state"),
     pName: document.getElementById("p-name"), pBorn: document.getElementById("p-born"), pDay: document.getElementById("p-day"),
     pStatusIcon: document.getElementById("p-status-icon"), pStatusLabel: document.getElementById("p-status-label"),
     dumplingRow: document.getElementById("dumpling-row"),
@@ -1141,19 +1166,7 @@
   var petReactionActive = false;
   var petReactionTimer = null;
 
-  function resolvePandaState() {
-    if (isAsleep()) return "idle";                 // nachts schlafen, Optik macht das CSS
-    if (isGrumpy()) return "sad";                  // frisch geweckt und verstimmt
-    // Pflege geht vor: Häufchen und Hunger sieht man dem Panda sofort an.
-    if (pet.poops >= 2 || pet.health <= 40) return "sad";
-    if (pet.hunger < 25) return "hungry";
-    if (dumplingCount() >= GOAL_DAYS) return "badge"; // nach dem Ziel bleibt der Panda stolz
-    var label = statusOf().label;
-    if (label === "glücklich") return "happy";
-    if (label === "zufrieden") return "idle";
-    if (label === "wartet auf dich") return "hungry";
-    return "sad";
-  }
+  function resolvePandaState() { return statusOf().img; }
 
   function setPandaImage(state) {
     var url = PANDA_IMG[state] || PANDA_IMG.idle;
@@ -1255,15 +1268,10 @@
 
     el.stageEl.classList.toggle("asleep", isAsleep());
 
-    var hint;
-    if (isAsleep()) hint = pet.name + " schläft (21 bis 7 Uhr). Antippen weckt ihn – aber dann ist er mürrisch.";
-    else if (isGrumpy()) hint = "Frisch geweckt und müde. Eine Runde Spielen bringt die Laune zurück.";
-    else if (pet.poops > 0) hint = pet.name + " hat ein Häufchen gemacht – bitte saubermachen.";
-    else if (hunger <= 0) hint = pet.name + " hat großen Hunger!";
-    else if (hunger < 30) hint = pet.name + " wird langsam hungrig.";
-    else if (health < 60) hint = pet.name + " erholt sich gerade wieder.";
-    else hint = "Alles bestens. Sattheit sinkt über 24 Stunden, alle 9 Stunden fällt ein Häufchen an.";
-    el.careHint.textContent = hint;
+    // Dieselbe Quelle wie die Statuszeile oben, damit nichts auseinanderläuft.
+    var st = statusOf();
+    el.careState.textContent = st.icon + " " + st.label;
+    el.careHint.textContent = st.note;
   }
 
   document.getElementById("btn-feed").addEventListener("click", feedPanda);
