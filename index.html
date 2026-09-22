@@ -298,10 +298,28 @@
   }
   @media (prefers-reduced-motion: no-preference) {
     .mk-panda { animation: mk-bob 2.2s ease-in-out infinite; }
+    /* Gehbewegung: kurze, federnde Schritte mit leichtem Wiegen */
+    .mk-panda.walking { animation: mk-walk .42s ease-in-out infinite; }
   }
   @keyframes mk-bob {
     0%, 100% { transform: translate(-50%, -112%); }
     50% { transform: translate(-50%, -124%); }
+  }
+  @keyframes mk-walk {
+    0%   { transform: translate(-50%, -112%) rotate(-5deg) scale(1, 0.97); }
+    25%  { transform: translate(-50%, -130%) rotate(0deg) scale(0.98, 1.04); }
+    50%  { transform: translate(-50%, -112%) rotate(5deg) scale(1, 0.97); }
+    75%  { transform: translate(-50%, -130%) rotate(0deg) scale(0.98, 1.04); }
+    100% { transform: translate(-50%, -112%) rotate(-5deg) scale(1, 0.97); }
+  }
+  .mk-panda.flip { --flip: -1; }
+  .mk-panda.walking.flip { animation-name: mk-walk-flip; }
+  @keyframes mk-walk-flip {
+    0%   { transform: translate(-50%, -112%) scaleX(-1) rotate(5deg); }
+    25%  { transform: translate(-50%, -130%) scaleX(-1) rotate(0deg); }
+    50%  { transform: translate(-50%, -112%) scaleX(-1) rotate(-5deg); }
+    75%  { transform: translate(-50%, -130%) scaleX(-1) rotate(0deg); }
+    100% { transform: translate(-50%, -112%) scaleX(-1) rotate(5deg); }
   }
   .map-caption { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
 
@@ -978,20 +996,22 @@
   // Der Weg als Stützpunktkette. Einträge mit dritter Zahl sind die
   // begehbaren Tagesfelder 1-30, die übrigen formen nur die Kurven,
   // damit die Linie dem gemalten Weg folgt statt Biegungen abzuschneiden.
+  // Koordinaten nicht geschätzt, sondern aus dem Bild gewonnen: sandfarbene
+  // Wegpixel erkannt, dann jeden Punkt auf die gewichtete Wegmitte gezogen.
   var MAP_PATH = [
-    [12.5, 19.3, 1], [17.0, 17.6], [22.0, 17.0, 2], [26.5, 17.2], [31.0, 18.0, 3],
-    [35.5, 19.0], [40.0, 20.0, 4], [44.5, 20.8], [49.0, 21.0, 5], [53.5, 21.3],
-    [58.0, 21.0, 6], [62.5, 20.3], [67.0, 20.0, 7], [71.5, 20.7], [76.0, 22.0, 8],
-    [81.0, 23.6], [85.0, 26.0, 9], [88.0, 28.2], [89.0, 30.7, 10], [88.0, 32.6],
-    [84.0, 34.0, 11], [79.5, 35.3], [75.0, 36.7, 12], [70.0, 38.0], [65.0, 39.3, 13],
-    [60.0, 40.4], [55.0, 41.3, 14], [49.5, 42.2], [44.0, 43.0, 15], [39.0, 43.6],
-    [34.0, 44.0, 16], [28.5, 44.4], [23.0, 45.0, 17], [17.5, 45.8], [14.0, 47.3, 18],
-    [13.2, 49.8], [15.2, 51.7], [18.0, 52.7, 19], [22.5, 54.4], [27.0, 56.0, 20],
-    [32.5, 57.2], [38.0, 58.0, 21], [43.5, 58.8], [49.0, 59.3, 22], [54.5, 59.5],
-    [60.0, 59.3, 23], [65.5, 58.7], [71.0, 58.3, 24], [76.0, 58.8], [80.0, 60.0, 25],
-    [84.5, 62.2], [86.5, 64.7, 26], [85.5, 67.6], [81.0, 70.3, 27], [76.5, 72.6],
-    [72.0, 74.7, 28], [66.0, 77.2], [60.0, 79.6], [54.0, 82.0, 29], [51.8, 85.8],
-    [55.0, 90.2], [62.0, 93.4], [70.0, 95.3, 30]
+    [14.3, 18.0, 1], [17.1, 17.2], [22.8, 16.3, 2], [26.7, 17.0], [30.6, 18.1, 3],
+    [34.6, 20.0], [39.7, 21.1, 4], [44.5, 21.6], [49.1, 21.4, 5], [53.5, 21.2],
+    [57.9, 20.8, 6], [62.4, 20.1], [67.1, 19.9, 7], [71.3, 19.9], [76.8, 20.6, 8],
+    [82.3, 21.7], [86.3, 25.6, 9], [90.3, 27.8], [90.0, 31.1, 10], [88.4, 32.8],
+    [84.6, 34.7, 11], [79.9, 35.8], [75.0, 37.0, 12], [71.9, 37.2], [69.1, 39.0, 13],
+    [62.0, 40.2], [53.1, 41.8, 14], [48.0, 42.1], [42.9, 43.7, 15], [39.1, 43.5],
+    [34.8, 42.7, 16], [31.1, 44.4], [22.5, 45.5, 17], [16.8, 45.8], [13.5, 47.4, 18],
+    [13.5, 49.5], [16.0, 50.9], [17.6, 51.2, 19], [22.5, 54.4], [27.6, 56.0, 20],
+    [32.5, 56.9], [36.4, 58.5, 21], [42.0, 59.0], [46.4, 59.9, 22], [53.0, 60.0],
+    [59.3, 60.6, 23], [65.0, 57.8], [72.1, 57.6, 24], [75.7, 58.5], [79.7, 60.5, 25],
+    [85.2, 62.8], [88.3, 65.6, 26], [85.7, 67.9], [80.9, 70.0, 27], [76.3, 72.6],
+    [71.3, 74.9, 28], [65.2, 76.2], [60.0, 79.6], [52.6, 83.9, 29], [52.1, 85.3],
+    [54.5, 86.8], [62.0, 93.4], [70.0, 95.3, 30]
   ];
   var MAP_POINTS = MAP_PATH.filter(function (p) { return p.length > 2; })
                            .map(function (p) { return [p[0], p[1]]; });
@@ -1677,6 +1697,44 @@
     return d;
   }
 
+  var mapPandaEl = null, lastShownStep = null;
+
+  // Läuft die Stützpunkte zwischen zwei Feldern ab. Jeder Teilschritt ist
+  // eine eigene Überblendung, dadurch folgt der Panda der Kurve statt
+  // quer über die Wiese zu springen.
+  function walkPandaAlong(node, fromDay, toDay) {
+    var idxFrom = -1, idxTo = -1;
+    for (var i = 0; i < MAP_PATH.length; i++) {
+      if (MAP_PATH[i][2] === fromDay) idxFrom = i;
+      if (MAP_PATH[i][2] === toDay) idxTo = i;
+    }
+    if (idxFrom < 0 || idxTo < 0 || idxTo <= idxFrom) return;
+    var steps = MAP_PATH.slice(idxFrom, idxTo + 1);
+    var per = Math.max(260, Math.min(700, 2400 / steps.length));
+    node.classList.add("walking");
+    node.style.transition = "none";
+    node.style.left = steps[0][0] + "%";
+    node.style.top = steps[0][1] + "%";
+    void node.offsetWidth;
+    node.style.transition = "left " + per + "ms linear, top " + per + "ms linear";
+    var k = 1;
+    (function next() {
+      if (k >= steps.length) {
+        setTimeout(function () {
+          node.classList.remove("walking");
+          node.style.transition = "";
+        }, per);
+        return;
+      }
+      // Blickrichtung: nach links laufend wird das Bild gespiegelt
+      node.classList.toggle("flip", steps[k][0] < steps[k - 1][0]);
+      node.style.left = steps[k][0] + "%";
+      node.style.top = steps[k][1] + "%";
+      k++;
+      setTimeout(next, per);
+    })();
+  }
+
   function renderMap(dCount) {
     var here = clamp(dCount, 1, GOAL_DAYS);
 
@@ -1732,8 +1790,16 @@
         panda.style.left = pt[0] + "%";
         panda.style.top = pt[1] + "%";
         el.mapDots.appendChild(panda);
+        mapPandaEl = panda;
       }
     });
+    // Gehbewegung: bei Fortschritt läuft der Panda die Strecke entlang,
+    // Punkt für Punkt, statt einfach am Ziel aufzutauchen.
+    if (mapPandaEl && lastShownStep !== null && here > lastShownStep && !reduceMotion) {
+      walkPandaAlong(mapPandaEl, lastShownStep, here);
+    }
+    lastShownStep = here;
+
     el.mapCaption.textContent = dCount >= GOAL_DAYS
       ? "Ziel erreicht! Dein Panda hat alle 30 Felder geschafft. 🏆"
       : "Dein Panda steht auf Feld " + here + ". Löse heute ein Rätsel, dann geht er ein Feld weiter.";
