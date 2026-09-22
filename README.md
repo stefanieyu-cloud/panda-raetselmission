@@ -38,17 +38,18 @@ Anmeldung rein lokal weiterüben (`localStorage`).
 
 - `?test=1` an die Adresse hängen blendet ein Testpanel ein. „+1 Tag simulieren" zeigt den ganzen
   30-Tage-Verlauf in wenigen Klicks.
-- `?calib=1` zeigt beim Klick auf die Karte die Prozentkoordinaten — nützlich, falls ein
-  Feld auf der Karte verschoben werden soll (`MAP_POINTS` in `index.html`).
+- Die Karte ist **gezeichnet, nicht fotografiert**: Weg, Fluss, Brücke und Ziel stecken als SVG
+  direkt in `index.html`. Die 30 Felder werden aus der Weglinie `<path id="road">` berechnet
+  (Feld n bei Bogenlänge (n-1)/29), liegen also zwangsläufig exakt auf dem Weg. Soll der Weg
+  anders verlaufen, ändert man nur das `d`-Attribut — die Felder wandern von selbst mit.
 - Die Bestenliste zeigt Spitzname und Dumpling-Anzahl der besten 25.
 
 ## Aufbau
 
 ```
 index.html   – die gesamte App (HTML, CSS, JavaScript in einer Datei)
-img/         – acht Panda-Zustandsbilder und die Kartenillustration
+img/         – die acht Panda-Zustandsbilder
 ```
 
-Die Panda- und Kartenillustrationen stammen von der Kursleiterin und werden mit ihrer Erlaubnis
-verwendet. Die gemalten Zahlen auf der Karte sind fehlerhaft (11, 16 und 25 doppelt, 12 fehlt),
-deshalb liegt die tatsächliche Route als eigene Linie mit 30 Feldern darüber.
+Die Panda-Illustrationen stammen von der Kursleiterin und werden mit ihrer Erlaubnis verwendet.
+Die Karte wird im Browser gezeichnet.
