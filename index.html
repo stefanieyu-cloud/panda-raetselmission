@@ -323,6 +323,11 @@
   }
   .map-caption { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
 
+  .setup-bar { border: 2px dashed var(--seal); border-radius: 12px; padding: 10px; margin-top: 10px; text-align: center; }
+  .setup-info { font-size: 13.5px; font-weight: 700; margin: 0 0 8px; }
+  .setup-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .setup-out { width: 100%; margin-top: 8px; font: 11px monospace; padding: 6px; border-radius: 8px; border: 1px solid var(--line); }
+
   .btn-link {
     background: none; border: none; color: var(--jade); font: inherit; font-size: 12.5px;
     text-decoration: underline; cursor: pointer; padding: 4px;
@@ -2555,15 +2560,62 @@
   // ---------------------------------------------------------------------
   // TESTVORSCHAU — nur mit ?test=1 in der Adresse, für die Lehrerin.
   // ---------------------------------------------------------------------
-  // Kalibrierhilfe: mit ?calib=1 zeigt ein Klick auf die Karte die Prozentwerte.
-  if (location.search.indexOf("calib=1") !== -1) {
+  // ---------------------------------------------------------------------
+  // FELDER SETZEN — mit ?setup=1 klickt man die 30 Felder der Reihe nach
+  // auf die Karte. Am Ende steht die fertige Liste zum Kopieren da.
+  // ---------------------------------------------------------------------
+  if (location.search.indexOf("setup=1") !== -1) {
+    var picks = [];
+    var bar = document.createElement("div");
+    bar.className = "setup-bar";
+    bar.innerHTML = '<p class="setup-info" id="setup-info"></p>'
+      + '<div class="setup-btns">'
+      + '<button class="btn-ghost" id="setup-undo">↶ Zurück</button>'
+      + '<button class="btn-ghost" id="setup-reset">Neu beginnen</button>'
+      + '<button class="btn-primary" id="setup-copy" hidden>Liste kopieren</button>'
+      + '</div><textarea class="setup-out" id="setup-out" rows="4" readonly hidden></textarea>';
+    el.mapWrap.parentNode.insertBefore(bar, el.mapWrap.nextSibling);
+
+    var info = document.getElementById("setup-info");
+    var outBox = document.getElementById("setup-out");
+    var copyBtn = document.getElementById("setup-copy");
+
+    function drawPicks() {
+      el.mapDots.innerHTML = "";
+      picks.forEach(function (p, i) {
+        var d = document.createElement("div");
+        d.className = "mk done";
+        d.style.left = p[0] + "%";
+        d.style.top = p[1] + "%";
+        d.textContent = String(i + 1);
+        el.mapDots.appendChild(d);
+      });
+      if (picks.length < 30) {
+        info.textContent = "Klicke auf Feld " + (picks.length + 1) + " von 30 – mitten auf den Sandweg.";
+        outBox.hidden = true; copyBtn.hidden = true;
+      } else {
+        info.textContent = "Fertig! Schick mir den Text unten.";
+        var rows = picks.map(function (p, i) { return "[" + p[0] + ", " + p[1] + ", " + (i + 1) + "]"; });
+        outBox.value = rows.join(", ");
+        outBox.hidden = false; copyBtn.hidden = false;
+      }
+    }
     el.mapWrap.addEventListener("click", function (ev) {
+      if (picks.length >= 30) return;
       var r = el.mapWrap.getBoundingClientRect();
-      var x = ((ev.clientX - r.left) / r.width * 100).toFixed(1);
-      var y = ((ev.clientY - r.top) / r.height * 100).toFixed(1);
-      toast("[" + x + ", " + y + "]");
-      if (window.console) console.log("[" + x + ", " + y + "],");
+      picks.push([
+        +((ev.clientX - r.left) / r.width * 100).toFixed(1),
+        +((ev.clientY - r.top) / r.height * 100).toFixed(1)
+      ]);
+      drawPicks();
     });
+    document.getElementById("setup-undo").addEventListener("click", function () { picks.pop(); drawPicks(); });
+    document.getElementById("setup-reset").addEventListener("click", function () { picks = []; drawPicks(); });
+    copyBtn.addEventListener("click", function () {
+      outBox.select();
+      try { document.execCommand("copy"); toast("Kopiert!"); } catch (e) { toast("Bitte von Hand markieren."); }
+    });
+    drawPicks();
   }
 
   if (location.search.indexOf("test=1") !== -1) {
