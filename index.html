@@ -69,11 +69,7 @@
     border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--paper); color: var(--ink); text-align: center;
   }
   .storage-note { font-size: 11.5px; color: var(--ink-soft); text-align: center; max-width: 320px; margin: 4px auto 0; line-height: 1.5; }
-  .adopt-hero-img { display: block; width: 160px; height: 160px; object-fit: contain; margin: 0 auto 10px; mix-blend-mode: multiply; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .adopt-hero-img { mix-blend-mode: normal; border-radius: 14px; }
-  }
-  :root[data-theme="dark"] .adopt-hero-img { mix-blend-mode: normal; border-radius: 14px; }
+  .adopt-hero-img { display: block; width: 160px; height: 160px; object-fit: contain; margin: 0 auto 10px; }
 
   .lesson-select-row { margin-top: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .lesson-select-row label { font-size: 13px; color: var(--ink-soft); }
@@ -104,14 +100,7 @@
     transition: opacity .18s ease;
     cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     user-select: none; -webkit-user-drag: none;
-    /* Die Bilder haben weissen Hintergrund: Multiply laesst ihn auf hellem
-       Papier verschwinden, so wirkt der Panda freigestellt statt gerahmt. */
-    mix-blend-mode: multiply;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .pet-img { mix-blend-mode: normal; border-radius: 14px; }
-  }
-  :root[data-theme="dark"] .pet-img { mix-blend-mode: normal; border-radius: 14px; }
   .pet-img.swap-out { opacity: 0; }
   .pet-img:active { filter: brightness(1.04); }
 
@@ -214,14 +203,11 @@
     border: 1.5px solid var(--jade); border-radius: 14px; padding: 12px; text-align: center;
     background: color-mix(in srgb, var(--jade) 7%, var(--paper-raised));
   }
-  .visit-img { width: 110px; height: 110px; object-fit: contain; mix-blend-mode: multiply; display: block; margin: 0 auto 6px; }
+  .visit-img { width: 110px; height: 110px; object-fit: contain; display: block; margin: 0 auto 6px; }
   .visit-name { font-family: "Noto Serif SC", serif; font-weight: 800; font-size: 16px; margin: 0 0 4px; }
   .visit-info { font-size: 12.5px; color: var(--ink-soft); margin: 0 0 8px; }
   .lb-visit-load { font-size: 13px; color: var(--ink-soft); text-align: center; }
   .lb-row { cursor: pointer; }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) .visit-img { mix-blend-mode: normal; border-radius: 12px; }
-  }
   .care-btns { display: flex; gap: 8px; margin-top: 12px; }
   .care-btns button { flex: 1; }
   .care-hint { font-size: 11.5px; color: var(--ink-soft); text-align: center; margin-top: 8px; line-height: 1.5; }
@@ -279,7 +265,7 @@
      Karte am Bildschirm gerade dargestellt wird. */
   .mk circle { fill: rgba(255, 255, 255, 0.94); stroke: rgba(120, 100, 70, 0.45); stroke-width: 3; }
   .mk text {
-    font-family: "Noto Sans SC", system-ui, sans-serif; font-weight: 800; font-size: 25px;
+    font-family: "Noto Sans SC", system-ui, sans-serif; font-weight: 800; font-size: 33px;
     fill: #7a6347; text-anchor: middle; dominant-baseline: central; pointer-events: none;
   }
   .mk.done circle { fill: var(--gold); stroke: #fff; }
@@ -295,7 +281,6 @@
   @media (prefers-reduced-motion: no-preference) {
     .mk.gift circle { animation: giftPulse 1.1s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
   }
-  .mk-panda image { mix-blend-mode: multiply; }
   @media (prefers-reduced-motion: no-preference) {
     .mk-panda image { animation: mk-bob 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
     /* Gehbewegung: kurze, federnde Schritte mit leichtem Wiegen */
@@ -513,9 +498,6 @@
     header.hero { padding: 18px 14px 14px; }
     .hero-watermark { font-size: 100px; top: -14px; }
 
-    /* Karte: groessere Felder, damit man sie mit dem Finger trifft */
-    .mk { width: 9.4%; font-size: 11px; border-width: 2px; }
-    .mk-panda { width: 17%; }
     .map-caption { font-size: 12px; }
 
     /* Pflegebereich untereinander statt nebeneinander */
@@ -1822,7 +1804,7 @@
         g.setAttribute("transform", "translate(" + p.x.toFixed(1) + "," + p.y.toFixed(1) + ")");
 
         var c = svgEl("circle");
-        c.setAttribute("r", milestone ? 30 : 25);
+        c.setAttribute("r", milestone ? 40 : 34);
         g.appendChild(c);
 
         var t = svgEl("text");
@@ -1831,10 +1813,16 @@
         if (giftReady) {
           t.textContent = "🎁";
           title.textContent = "Überraschung öffnen!";
+          // unsichtbare, größere Trefferfläche — auf dem Handy trifft man
+          // sonst den Kreis mit dem Finger nur knapp
+          var hit = svgEl("circle");
+          hit.setAttribute("r", 56);
+          hit.setAttribute("fill", "transparent");
+          g.appendChild(hit);
           g.addEventListener("click", function () { tryOpenGift(n); });
         } else if (opened) {
           t.textContent = milestone.icon;
-          t.setAttribute("font-size", milestone.icon.length > 2 ? 20 : 27);
+          t.setAttribute("font-size", milestone.icon.length > 2 ? 27 : 36);
           title.textContent = milestone.label;
         } else if (done) {
           t.textContent = "🥟";
@@ -1857,8 +1845,8 @@
     var img = svgEl("image");
     img.setAttributeNS("http://www.w3.org/1999/xlink", "href", PANDA_IMG.idle);
     img.setAttribute("href", PANDA_IMG.idle);
-    img.setAttribute("x", -62); img.setAttribute("y", -150);
-    img.setAttribute("width", 124); img.setAttribute("height", 124);
+    img.setAttribute("x", -76); img.setAttribute("y", -204);
+    img.setAttribute("width", 152); img.setAttribute("height", 152);
     img.setAttribute("preserveAspectRatio", "xMidYMax meet");
     inner.appendChild(img);
     pg.appendChild(inner);
